@@ -1,11 +1,13 @@
 #include "func_tree.hpp"
 
 #include <type_traits>
+#include <exception>
 #include <cassert>
+#include <cerrno>
 #include <climits>
+#include <cctype>
 #include <cstdlib>
 #include <cmath>
-#include <functional>
 #include <regex>
 #include <algorithm>
 #include <vector>
@@ -123,7 +125,10 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const
 
 t_func_tree::h_item t_func_tree::gener(std::string str) const {
 
-	return h_item(new t_item_index(*this, str[0]));
+	if ((str.length() == 1) && isalpha(str[0]) && islower(str[0])) {
+		return h_item(new t_item_index(*this, str[0]));
+	}
+	return nullptr;
 }
 
 t_func_tree::h_item t_func_tree::gener(double val) const {
@@ -135,7 +140,17 @@ t_func_tree::h_item t_func_tree::gener(double val) const {
 
 bool t_func_tree::create(std::string str) {
 
-	static const std::regex expr("\\s*((\\d+(\\.\\d+)?)|([a-z]+)|(\\()|([\\+\\-\\/\\^]|\\*|\\)|,))");
+	static const std::regex expr("^\\s*((\\d+(\\.\\d+)?)|([a-z]+)|(\\()|([\\+\\-\\/\\^]|\\*|\\)))\\s*");
+	static const int IND_CONST = 2;
+	static const int IND_INDEX = 4;
+	static const int IND_BRACE = 5;
+	static const int IND_BSIGN = 6;
+	//...
+	static const int IS_START = 0;
+	static const int IS_VALUE = 1;
+	static const int IS_PFUNC = 2;
+	static const int IS_BSIGN = 3;
+	static const int IS_ERROR = 4;
 	//...
 	static std::map<std::string, int> LEVEL;
 	static std::set<std::string> FUNC1;
@@ -160,16 +175,30 @@ bool t_func_tree::create(std::string str) {
 		LEVEL["+"] = LEVEL["-"] = 3;
 		LEVEL[")"] = 2;
 		LEVEL[","] = 1;
-		LEVEL["("] = 0;
-		LEVEL[""] = -1;
+		LEVEL["("] = -1;
+		LEVEL[""] = 0;
 		//...
 		start = false;
 	}
-	std::stack<h_item> OPER; std::stack<std::string> SIGN; std::smatch res; bool first = true;
+
+	std::stack<h_item> OPER; std::stack<std::string> SIGN; std::string tmp; std::smatch res;
+	int state = IS_START;
 	while (true) {
-		std::string tmp = ""; if (std::regex_search(str, res, expr)) tmp = res[1].str();
-		//Бинарные операции, запятая или закрывающая скобка:
-		if (res[6].length() || (tmp == "")) {
+		if (str.size()) {
+			if (!std::regex_search(str, res, expr)) {
+				throw std::logic_error("There is incorrect token in the string!");
+			}
+			tmp = res[1].str();
+		}
+		else {
+			tmp = "";
+		}
+		//Знаки арифметических операций или закрывающая скобка:
+		if (res[IND_BSIGN].length() || (tmp == "")) {
+
+			if (state != IS_VALUE && (state != IS_START || tmp != "-")) {
+				throw std::logic_error("Incorrect location of the operations!");
+			}
 			int cur = LEVEL[tmp];
 			while (!SIGN.empty() && (LEVEL[SIGN.top()] >= cur)) {
 				//Для бинарных операторов:
@@ -188,43 +217,63 @@ bool t_func_tree::create(std::string str) {
 				}
 				SIGN.pop();
 			}
-			if (tmp != "," && tmp != ")") SIGN.push(tmp);
-			if (tmp == "-" && first) OPER.push(gener(0));
-			if (tmp == ")") SIGN.pop();
-			first = (tmp == ",");
-			if (tmp == "") break;
-		}
-		//Имена переменных и функции:
-		else if (res[4].length()) {
-			if (!FUNC1.count(tmp) && !FUNC2.count(tmp)) {
-				OPER.push(gener(tmp));
-				first = false;
+			if (tmp == "-" && state == IS_START) {
+				OPER.push(gener(0));
+			}
+			if (tmp == ")") {
+				state = IS_VALUE;
+				if (!SIGN.size()) {
+					throw std::logic_error("There is extra closing bracket!");
+				}
+				SIGN.pop();
+			}
+			else
+			if (tmp == "") {
+				if (SIGN.size()) {
+					throw std::logic_error("There is extra opening bracket!");
+				}
+				break;
 			}
 			else {
+				state = IS_BSIGN;
 				SIGN.push(tmp);
-				first = true;
+			}
+		}
+		//Имена переменных и функции:
+		else if (res[IND_INDEX].length()) {
+
+			if (state == IS_VALUE) {
+				throw std::logic_error("Incorrect location of the operands!");
+			}
+			if (!FUNC1.count(tmp) && !FUNC2.count(tmp)) {
+				OPER.push(gener(tmp));
+				if (!OPER.top()) {
+				throw std::logic_error("Incorrect name of the operand!");
+				}
+				state = IS_VALUE;
+			}
+			else {
+				state = IS_PFUNC;
+				SIGN.push(tmp);
 			}
 		}
 		//Открывающая скобка:
-		else if (res[5].length()) {
+		else if (res[IND_BRACE].length()) {
+			if (state != IS_START && state != IS_PFUNC) {
+				throw std::logic_error("Incorrect location of bracket!");
+			}
+			state = IS_START;
 			SIGN.push(tmp);
-			first = true;
 		}
 		//Числовые константы:
-		else if (res[2].length()) {
-			OPER.push(
-			gener(
-			atof(res[2].str().c_str())
-			)
-			);
-			first = false;
+		else if (res[IND_CONST].length()) {
+			OPER.push(gener(atof(res[2].str().c_str())));
+			if (errno) {
+				throw std::logic_error("Incorrect value of constant!");
+			}
+			state = IS_VALUE;
 		}
-		//...
-		if (tmp != "") {
-			str = res.suffix().str();
-			continue;
-		}
-		break;
+		str = res.suffix().str();
 	}
 	root = OPER.top();
 
