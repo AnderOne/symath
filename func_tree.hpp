@@ -21,6 +21,7 @@ struct t_func_tree {
 
 	bool create(std::string str);
 	void derive(char var);
+	void reduce();
 
 protected:
 
@@ -80,6 +81,7 @@ protected:
 		explicit t_item(const t_func_tree &_own): own(_own) {}
 		virtual std::string str() const = 0;	//Переводит выражение в строку;
 		virtual h_item dif(char) const = 0;	//Возвращает производную;
+		virtual h_item red() const = 0;	//Сокращает выражение;
 		virtual double get() const = 0;	//Вычисляет значение;
 		virtual h_item cpy(const t_func_tree &) const = 0;
 		virtual h_item cpy() const = 0;
@@ -93,6 +95,7 @@ protected:
 		         t_item(_own), val(_val) {}
 		std::string str() const override;
 		h_item dif(char) const override;
+		h_item red() const override;
 		double get() const override;
 		h_item cpy(const t_func_tree &) const override;
 		h_item cpy() const override;
@@ -105,6 +108,7 @@ protected:
 		         t_item(_own), ind(_ind) {}
 		std::string str() const override;
 		h_item dif(char) const override;
+		h_item red() const override;
 		double get() const override;
 		h_item cpy(const t_func_tree &) const override;
 		h_item cpy() const override;
@@ -135,6 +139,7 @@ protected:
 		         t_item_arg<dim>(_arg ...) {}\
 		std::string str() const override;\
 		h_item dif(char) const override;\
+		h_item red() const override;\
 		double get() const override;\
 		h_item cpy(const t_func_tree &)\
 		const override;\
