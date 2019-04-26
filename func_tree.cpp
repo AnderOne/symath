@@ -98,6 +98,63 @@ __DEF_METH_GET(sin)
 
 double t_func_tree::t_item_neg::get() const { return - arg[0]->get(); }
 
+//Методы дифференцирования узлов:
+
+t_func_tree::h_item t_func_tree::t_item_index::dif(char var) const {
+	return own.gener((var == ind)? 1: 0);
+}
+
+t_func_tree::h_item t_func_tree::t_item_const::dif(char var) const {
+	return own.gener(0);
+}
+
+t_func_tree::h_item t_func_tree::t_item_sqrt::dif(char var) const {
+	return arg[0]->dif(var) / (own.gener(2) * cpy());
+}
+
+t_func_tree::h_item t_func_tree::t_item_log::dif(char var) const {
+	return arg[0]->dif(var) / arg[0]->cpy();
+}
+
+t_func_tree::h_item t_func_tree::t_item_exp::dif(char var) const {
+	return arg[0]->dif(var) * cpy();
+}
+
+t_func_tree::h_item t_func_tree::t_item_cos::dif(char var) const {
+	return - (arg[0]->dif(var) * own.sin(arg[0]->cpy()));
+}
+
+t_func_tree::h_item t_func_tree::t_item_sin::dif(char var) const {
+	return (arg[0]->dif(var) * own.cos(arg[0]->cpy()));
+}
+
+t_func_tree::h_item t_func_tree::t_item_neg::dif(char var) const {
+	return - arg[0]->dif(var);
+}
+
+t_func_tree::h_item t_func_tree::t_item_sub::dif(char var) const {
+	return arg[0]->dif(var) - arg[1]->dif(var);
+}
+
+t_func_tree::h_item t_func_tree::t_item_add::dif(char var) const {
+	return arg[0]->dif(var) + arg[1]->dif(var);
+}
+
+t_func_tree::h_item t_func_tree::t_item_mul::dif(char var) const {
+	return arg[0]->dif(var) * arg[1]->cpy() +
+	       arg[0]->cpy() * arg[1]->dif(var);
+}
+
+t_func_tree::h_item t_func_tree::t_item_div::dif(char var) const {
+	return arg[0]->dif(var) / arg[1]->cpy() -
+	       arg[0]->cpy() * arg[1]->dif(var) / arg[1]->cpy();
+}
+
+t_func_tree::h_item t_func_tree::t_item_pow::dif(char var) const {
+	return arg[1]->cpy() * arg[0]->dif(var) * (arg[0]->cpy() ^ (arg[1]->cpy() - own.gener(1))) +
+	       arg[1]->dif(var) * own.log(arg[0]->cpy()) * cpy();
+}
+
 //Генераторы узлов:
 
 t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &lhs, const h_item &rhs) const {
@@ -278,6 +335,10 @@ bool t_func_tree::create(std::string str) {
 	root = OPER.top();
 
 	return true;
+}
+
+void t_func_tree::derive(char var) {
+	root = root->dif(var);
 }
 
 //...

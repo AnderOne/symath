@@ -20,6 +20,7 @@ struct t_func_tree {
 	t_func_tree();
 
 	bool create(std::string str);
+	void derive(char var);
 
 protected:
 
@@ -33,14 +34,52 @@ protected:
 	h_item gener(double val) const;
 
 	struct h_item: public std::shared_ptr<t_item> {
+
 		template <typename ... T>
-		h_item(T ... args):
-		std::shared_ptr<t_item> (args ...) {}
+		h_item(T ... args): std::shared_ptr<t_item> (args ...) {}
+
+		inline h_item operator^(const h_item &rhs) const {
+			return get()->own.gener("^", *this, rhs);
+		}
+		inline h_item operator/(const h_item &rhs) const {
+			return get()->own.gener("/", *this, rhs);
+		}
+		inline h_item operator*(const h_item &rhs) const {
+			return get()->own.gener("*", *this, rhs);
+		}
+		inline h_item operator+(const h_item &rhs) const {
+			return get()->own.gener("+", *this, rhs);
+		}
+		inline h_item operator-(const h_item &rhs) const {
+			return get()->own.gener("-", *this, rhs);
+		}
+		inline h_item operator-() const {
+			return get()->own.gener("-", *this);
+		}
 	};
+
+	//Математические функции:
+	inline h_item sqrt(const h_item &arg) const {
+		return gener("sqrt", arg);
+	}
+	inline h_item log(const h_item &arg) const {
+		return gener("log", arg);
+	}
+	inline h_item exp(const h_item &arg) const {
+		return gener("exp", arg);
+	}
+	inline h_item cos(const h_item &arg) const {
+		return gener("cos", arg);
+		
+	}
+	inline h_item sin(const h_item &arg) const {
+		return gener("sin", arg);
+	}
 
 	struct t_item {
 		explicit t_item(const t_func_tree &_own): own(_own) {}
 		virtual std::string str() const = 0;	//Переводит выражение в строку;
+		virtual h_item dif(char) const = 0;	//Возвращает производную;
 		virtual double get() const = 0;	//Вычисляет значение;
 		virtual h_item cpy(const t_func_tree &) const = 0;
 		virtual h_item cpy() const = 0;
@@ -53,6 +92,7 @@ protected:
 		explicit t_item_const(const t_func_tree &_own, double _val):
 		         t_item(_own), val(_val) {}
 		std::string str() const override;
+		h_item dif(char) const override;
 		double get() const override;
 		h_item cpy(const t_func_tree &) const override;
 		h_item cpy() const override;
@@ -64,6 +104,7 @@ protected:
 		explicit t_item_index(const t_func_tree &_own, char _ind):
 		         t_item(_own), ind(_ind) {}
 		std::string str() const override;
+		h_item dif(char) const override;
 		double get() const override;
 		h_item cpy(const t_func_tree &) const override;
 		h_item cpy() const override;
@@ -93,6 +134,7 @@ protected:
 		explicit t_item_##func(const T &... _arg):\
 		         t_item_arg<dim>(_arg ...) {}\
 		std::string str() const override;\
+		h_item dif(char) const override;\
 		double get() const override;\
 		h_item cpy(const t_func_tree &)\
 		const override;\
