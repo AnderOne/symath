@@ -256,6 +256,12 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	if (rc && (rc->val == 1)) {
 		return lhs;
 	}
+	if (lc && (lc->val == -1)) {
+		return - rhs;
+	}
+	if (rc && (rc->val == -1)) {
+		return - lhs;
+	}
 	const t_item_neg *ln = dynamic_cast<const t_item_neg *> (lhs.get());
 	const t_item_neg *rn = dynamic_cast<const t_item_neg *> (rhs.get());
 	if (ln && rn) {
@@ -283,6 +289,9 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	}
 	if (rc && (rc->val == 1)) {
 		return lhs;
+	}
+	if (rc && (rc->val == - 1)) {
+		return - lhs;
 	}
 	const t_item_neg *ln = dynamic_cast<const t_item_neg *> (lhs.get());
 	const t_item_neg *rn = dynamic_cast<const t_item_neg *> (rhs.get());
