@@ -2,6 +2,8 @@
 #define __INCLUDE_FUNC_TREE
 
 #include <type_traits>
+#include <ostream>
+#include <istream>
 #include <string>
 #include <memory>
 
@@ -164,5 +166,16 @@ private:
 	double DATA[26];
 	h_item root;
 };
+
+inline std::ostream &operator<<(std::ostream &out, const t_func_tree &tree) {
+	return out << (std::string) tree;
+}
+
+inline std::istream &operator>>(std::istream &inp, t_func_tree &tree) {
+	std::string str;
+	std::getline(inp, str);
+	tree.create(str);
+	return inp;
+}
 
 #endif //__INCLUDE_FUNC_TREE

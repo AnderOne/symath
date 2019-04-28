@@ -410,6 +410,7 @@ bool t_func_tree::create(std::string str) {
 
 	std::stack<h_item> OPER; std::stack<std::string> SIGN; std::string tmp; std::smatch res;
 	int state = IS_START;
+	root = nullptr;
 	while (true) {
 		if (str.size()) {
 			if (!std::regex_search(str, res, expr)) {
