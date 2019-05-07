@@ -18,9 +18,9 @@
 
 //Методы клонирования узлов:
 
-t_func_tree::h_item t_func_tree::t_item_const::cpy(const t_func_tree &_own) const { return h_item(new t_item_const(_own, val)); }
-
 t_func_tree::h_item t_func_tree::t_item_index::cpy(const t_func_tree &_own) const { return h_item(new t_item_index(_own, ind)); }
+
+t_func_tree::h_item t_func_tree::t_item_const::cpy(const t_func_tree &_own) const { return h_item(new t_item_const(_own, val)); }
 
 t_func_tree::h_item t_func_tree::t_item_const::cpy() const { return h_item(new t_item_const(*this)); }
 
@@ -56,8 +56,8 @@ __DEF_METH_CPY(pow, 2)
 
 //Перевод в строку:
 
-std::string t_func_tree::t_item_const::str() const { return std::to_string(val); }
 std::string t_func_tree::t_item_index::str() const { return std::string() + ind; }
+std::string t_func_tree::t_item_const::str() const { return val; }
 
 std::string t_func_tree::t_item_pow::str() const { return "(" + arg[0]->str() + ") ^ (" + arg[1]->str() + ")"; }
 std::string t_func_tree::t_item_div::str() const { return "(" + arg[0]->str() + ") / (" + arg[1]->str() + ")"; }
@@ -78,8 +78,8 @@ std::string t_func_tree::t_item_neg::str() const { return "-(" + arg[0]->str() +
 
 //Вычисление выражения:
 
-double t_func_tree::t_item_const::get() const { return (double) val; }
 double t_func_tree::t_item_index::get() const { return own[ind]; }
+double t_func_tree::t_item_const::get() const { return val; }
 
 double t_func_tree::t_item_pow::get() const { return pow(arg[0]->get(), arg[1]->get()); }
 double t_func_tree::t_item_div::get() const { return arg[0]->get() / arg[1]->get(); }
@@ -168,9 +168,6 @@ t_func_tree::h_item t_func_tree::t_item_const::red() const {
 #define __DEF_METH_RED(func)\
 t_func_tree::h_item t_func_tree::t_item_##func::red() const {\
 	h_item lhs = arg[0]->red();\
-	if (dynamic_cast<t_item_const *> (lhs.get())) {\
-		return own.gener(get());\
-	}\
 	return own.func(lhs);\
 }
 
@@ -184,7 +181,7 @@ t_func_tree::h_item t_func_tree::t_item_neg::red() const {
 	h_item lhs = arg[0]->red();
 	const t_item_const *ac = dynamic_cast<const t_item_const *> (lhs.get());
 	if (ac != nullptr) {
-		return own.gener(this->get());
+		return own.gener(- ac->val);
 	}
 	const t_item_neg *ar = dynamic_cast<const t_item_neg *> (lhs.get());
 	if (ar != nullptr) {
@@ -199,7 +196,7 @@ t_func_tree::h_item t_func_tree::t_item_sub::red() const {
 	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
 	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
 	if (lc && rc) {
-		return own.gener(this->get());
+		return own.gener(lc->val - rc->val);
 	}
 	if (lc && (lc->val == 0)) {
 		return (- rhs)->red();
@@ -221,7 +218,7 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
 	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
 	if (lc && rc) {
-		return own.gener(this->get());
+		return own.gener(lc->val + rc->val);
 	}
 	if (lc && (lc->val == 0)) {
 		return rhs;
@@ -242,7 +239,7 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
 	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
 	if (lc && rc) {
-		return own.gener(this->get());
+		return own.gener(lc->val * rc->val);
 	}
 	if (lc && (lc->val == 0)) {
 		return own.gener(0);
@@ -282,7 +279,7 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
 	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
 	if (lc && rc) {
-		return own.gener(this->get());
+		return own.gener(lc->val / rc->val);
 	}
 	if (lc && (lc->val == 0)) {
 		return own.gener(0);
@@ -312,9 +309,10 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 	h_item rhs = arg[1]->red();
 	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
 	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
-	if (lc && rc) {
+	//TODO: ...
+	/*if (lc && rc) {
 		return own.gener(this->get());
-	}
+	}*/
 	if (lc && (lc->val == 1)) {
 		return own.gener(1);
 	}
@@ -358,20 +356,29 @@ t_func_tree::h_item t_func_tree::gener(std::string str) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::gener(double val) const {
+t_func_tree::h_item t_func_tree::gener(t_long_frac val) const {
 
 	return h_item(new t_item_const(*this, val));
+}
+
+t_func_tree::h_item t_func_tree::gener(long val) const {
+
+	return h_item(
+	new t_item_const(*this, t_long_frac(val))
+	);
 }
 
 //...
 
 bool t_func_tree::create(std::string str) {
 
-	static const std::regex expr("^\\s*((\\d+(\\.\\d+)?)|([a-z]+)|(\\()|([\\+\\-\\/\\^]|\\*|\\)))\\s*");
+	static const std::regex expr("^\\s*(((\\d+)(\\.(\\d+))?)|([a-z]+)|(\\()|([\\+\\-\\/\\^]|\\*|\\)))\\s*");
 	static const int IND_CONST = 2;
-	static const int IND_INDEX = 4;
-	static const int IND_BRACE = 5;
-	static const int IND_BSIGN = 6;
+	static const int IND_CONST_INT = 3;
+	static const int IND_CONST_MAN = 5;
+	static const int IND_INDEX = 6;
+	static const int IND_BRACE = 7;
+	static const int IND_BSIGN = 8;
 	//...
 	static const int IS_START = 0;
 	static const int IS_VALUE = 1;
@@ -495,10 +502,20 @@ bool t_func_tree::create(std::string str) {
 		}
 		//Числовые константы:
 		else if (res[IND_CONST].length()) {
-			OPER.push(gener(atof(res[2].str().c_str())));
-			if (errno) {
-				throw std::logic_error("Incorrect value of constant!");
+			t_long_frac val;
+			std::string a = res[IND_CONST_INT].str();
+			std::string b = res[IND_CONST_MAN].str();
+			if (b.size()) {
+				std::string s = "1";
+				for (int i = 0; i < b.size(); ++ i) {
+					s += "0";
+				}
+				val = t_long_frac(a + b + "/" + s);
 			}
+			else {
+				val = t_long_frac(a);
+			}
+			OPER.push(gener(val));
 			state = IS_VALUE;
 		}
 		str = res.suffix().str();

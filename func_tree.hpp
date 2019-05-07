@@ -1,6 +1,8 @@
 #ifndef __INCLUDE_FUNC_TREE
 #define __INCLUDE_FUNC_TREE
 
+#include "long_frac.hpp"
+
 #include <type_traits>
 #include <ostream>
 #include <istream>
@@ -34,7 +36,8 @@ protected:
 	h_item gener(std::string str, const h_item &lhs, const h_item &rhs) const;
 	h_item gener(std::string str, const h_item &rhs) const;
 	h_item gener(std::string str) const;
-	h_item gener(double val) const;
+	h_item gener(t_long_frac val) const;
+	h_item gener(long val) const;
 
 	struct h_item: public std::shared_ptr<t_item> {
 
@@ -93,7 +96,7 @@ protected:
 
 	struct t_item_const:
 	public t_item {
-		explicit t_item_const(const t_func_tree &_own, double _val):
+		explicit t_item_const(const t_func_tree &_own, t_long_frac _val):
 		         t_item(_own), val(_val) {}
 		std::string str() const override;
 		h_item dif(char) const override;
@@ -101,7 +104,7 @@ protected:
 		double get() const override;
 		h_item cpy(const t_func_tree &) const override;
 		h_item cpy() const override;
-		const double val;
+		const t_long_frac val;
 	};
 
 	struct t_item_index:
