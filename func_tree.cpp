@@ -494,7 +494,9 @@ bool t_func_tree::create(std::string str) {
 		}
 		//Открывающая скобка:
 		else if (res[IND_BRACE].length()) {
-			if (state != IS_START && state != IS_PFUNC) {
+			if (state != IS_START &&
+			    state != IS_PFUNC &&
+			    state != IS_BSIGN) {
 				throw std::logic_error("Incorrect location of bracket!");
 			}
 			state = IS_START;
