@@ -54,8 +54,11 @@ struct t_long_frac {
 		return val op rhs;\
 	}
 
-	DEF_MATH_OPERATOR(+)
+	t_long_frac operator-() const {
+		return - val;
+	}
 	DEF_MATH_OPERATOR(-)
+	DEF_MATH_OPERATOR(+)
 	DEF_MATH_OPERATOR(*)
 	DEF_MATH_OPERATOR(/)
 	DEF_LOG_OPERATOR(==)
