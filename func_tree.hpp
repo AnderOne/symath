@@ -91,6 +91,9 @@ protected:
 		virtual double get() const = 0;	//Вычисляет значение;
 		virtual h_item cpy(const t_func_tree &) const = 0;
 		virtual h_item cpy() const = 0;
+		//...
+		h_item ref() { return own.LINK[this].lock(); }
+		//...
 		virtual ~t_item() {}
 		const t_func_tree &own;
 	};
@@ -166,10 +169,13 @@ protected:
 
 	#undef __DECL_ITEM_TYPE
 
+	friend struct t_item;
+
 private:
 	h_item store(t_item *&& _ptr) const;
 
-	mutable std::map<const t_item *,
+	mutable std::map<
+	const t_item *,
 	std::weak_ptr<t_item> > LINK;
 
 	double DATA[26];
