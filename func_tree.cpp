@@ -18,13 +18,13 @@
 
 //Методы клонирования узлов:
 
-t_func_tree::h_item t_func_tree::t_item_index::cpy(const t_func_tree &_own) const { return h_item(new t_item_index(_own, ind)); }
+t_func_tree::h_item t_func_tree::t_item_index::cpy(const t_func_tree &_own) const { return _own.gener(std::string(1, ind)); }
 
-t_func_tree::h_item t_func_tree::t_item_const::cpy(const t_func_tree &_own) const { return h_item(new t_item_const(_own, val)); }
+t_func_tree::h_item t_func_tree::t_item_const::cpy(const t_func_tree &_own) const { return _own.gener(val); }
 
-t_func_tree::h_item t_func_tree::t_item_const::cpy() const { return h_item(new t_item_const(*this)); }
+t_func_tree::h_item t_func_tree::t_item_index::cpy() const { return own.gener(std::string(1, ind)); }
 
-t_func_tree::h_item t_func_tree::t_item_index::cpy() const { return h_item(new t_item_index(*this)); }
+t_func_tree::h_item t_func_tree::t_item_const::cpy() const { return own.gener(val); }
 
 #define __DEF_METH_CPY(func, dim)\
 t_func_tree::h_item t_func_tree::t_item_##func::cpy(const t_func_tree &_own) const {\
@@ -56,7 +56,7 @@ __DEF_METH_CPY(pow, 2)
 
 //Перевод в строку:
 
-std::string t_func_tree::t_item_index::str() const { return std::string() + ind; }
+std::string t_func_tree::t_item_index::str() const { return std::string(1, ind); }
 std::string t_func_tree::t_item_const::str() const { return val; }
 
 std::string t_func_tree::t_item_pow::str() const { return "(" + arg[0]->str() + ") ^ (" + arg[1]->str() + ")"; }
