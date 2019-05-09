@@ -8,6 +8,7 @@
 #include <istream>
 #include <string>
 #include <memory>
+#include <map>
 
 struct t_func_tree {
 
@@ -166,7 +167,13 @@ protected:
 	#undef __DECL_ITEM_TYPE
 
 private:
+	h_item store(t_item *&& _ptr) const;
+
+	mutable std::map<const t_item *,
+	std::weak_ptr<t_item> > LINK;
+
 	double DATA[26];
+
 	h_item root;
 };
 

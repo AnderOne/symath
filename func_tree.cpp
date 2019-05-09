@@ -325,25 +325,27 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 
 //Генераторы узлов:
 
+t_func_tree::h_item t_func_tree::store(t_item *&& _ptr) const { h_item hand(_ptr); LINK[_ptr] = hand; return hand; }
+
 t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &lhs, const h_item &rhs) const {
 
-	if (str == "^") return h_item(new t_item_pow(*this, lhs, rhs));
-	if (str == "/") return h_item(new t_item_div(*this, lhs, rhs));
-	if (str == "*") return h_item(new t_item_mul(*this, lhs, rhs));
-	if (str == "+") return h_item(new t_item_add(*this, lhs, rhs));
-	if (str == "-") return h_item(new t_item_sub(*this, lhs, rhs));
+	if (str == "^") return store(new t_item_pow(*this, lhs, rhs));
+	if (str == "/") return store(new t_item_div(*this, lhs, rhs));
+	if (str == "*") return store(new t_item_mul(*this, lhs, rhs));
+	if (str == "+") return store(new t_item_add(*this, lhs, rhs));
+	if (str == "-") return store(new t_item_sub(*this, lhs, rhs));
 
 	return nullptr;
 }
 
 t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const {
 
-	if (str == "sqrt") return h_item(new t_item_sqrt(*this, rhs));
-	if (str == "log") return h_item(new t_item_log(*this, rhs));
-	if (str == "exp") return h_item(new t_item_exp(*this, rhs));
-	if (str == "cos") return h_item(new t_item_cos(*this, rhs));
-	if (str == "sin") return h_item(new t_item_sin(*this, rhs));
-	if (str == "-") return h_item(new t_item_neg(*this, rhs));
+	if (str == "sqrt") return store(new t_item_sqrt(*this, rhs));
+	if (str == "log") return store(new t_item_log(*this, rhs));
+	if (str == "exp") return store(new t_item_exp(*this, rhs));
+	if (str == "cos") return store(new t_item_cos(*this, rhs));
+	if (str == "sin") return store(new t_item_sin(*this, rhs));
+	if (str == "-") return store(new t_item_neg(*this, rhs));
 
 	return nullptr;
 }
@@ -351,19 +353,19 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const
 t_func_tree::h_item t_func_tree::gener(std::string str) const {
 
 	if ((str.length() == 1) && isalpha(str[0]) && islower(str[0])) {
-		return h_item(new t_item_index(*this, str[0]));
+		return store(new t_item_index(*this, str[0]));
 	}
 	return nullptr;
 }
 
 t_func_tree::h_item t_func_tree::gener(t_long_frac val) const {
 
-	return h_item(new t_item_const(*this, val));
+	return store(new t_item_const(*this, val));
 }
 
 t_func_tree::h_item t_func_tree::gener(long val) const {
 
-	return h_item(
+	return store(
 	new t_item_const(*this, t_long_frac(val))
 	);
 }
