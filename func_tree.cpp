@@ -181,12 +181,12 @@ t_func_tree::h_item t_func_tree::t_item_neg::red() const {
 
 	h_item lhs = arg[0]->red();
 
-	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
+	t_item_const *lc = dynamic_cast<t_item_const *> (lhs.get());
 	if (lc != nullptr) {
 		return own.gener(- lc->val);
 	}
 
-	const t_item_neg *ln = dynamic_cast<const t_item_neg *> (lhs.get());
+	t_item_neg *ln = dynamic_cast<t_item_neg *> (lhs.get());
 	if (ln != nullptr) {
 		return ln->arg[0];
 	}
@@ -199,8 +199,8 @@ t_func_tree::h_item t_func_tree::t_item_sub::red() const {
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
 
-	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
-	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
+	t_item_const *lc = dynamic_cast<t_item_const *> (lhs.get());
+	t_item_const *rc = dynamic_cast<t_item_const *> (rhs.get());
 	if (lc && rc) {
 		return own.gener(lc->val - rc->val);
 	}
@@ -211,7 +211,7 @@ t_func_tree::h_item t_func_tree::t_item_sub::red() const {
 		return lhs;
 	}
 
-	const t_item_neg *rn = dynamic_cast<const t_item_neg *> (rhs.get());
+	t_item_neg *rn = dynamic_cast<t_item_neg *> (rhs.get());
 	if (rn) {
 		return lhs + rn->arg[0];
 	}
@@ -224,8 +224,8 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
 
-	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
-	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
+	t_item_const *lc = dynamic_cast<t_item_const *> (lhs.get());
+	t_item_const *rc = dynamic_cast<t_item_const *> (rhs.get());
 	if (lc && rc) {
 		return own.gener(lc->val + rc->val);
 	}
@@ -236,7 +236,7 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 		return lhs;
 	}
 
-	const t_item_neg *rn = dynamic_cast<const t_item_neg *> (rhs.get());
+	t_item_neg *rn = dynamic_cast<t_item_neg *> (rhs.get());
 	if (rn) {
 		return (lhs - rn->arg[0])->red();
 	}
@@ -249,8 +249,8 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
 
-	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
-	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
+	t_item_const *lc = dynamic_cast<t_item_const *> (lhs.get());
+	t_item_const *rc = dynamic_cast<t_item_const *> (rhs.get());
 	if (lc && rc) {
 		return own.gener(lc->val * rc->val);
 	}
@@ -273,8 +273,8 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 		return lhs;
 	}
 
-	const t_item_neg *ln = dynamic_cast<const t_item_neg *> (lhs.get());
-	const t_item_neg *rn = dynamic_cast<const t_item_neg *> (rhs.get());
+	t_item_neg *ln = dynamic_cast<t_item_neg *> (lhs.get());
+	t_item_neg *rn = dynamic_cast<t_item_neg *> (rhs.get());
 	if (ln && rn) {
 		return (ln->arg[0] * rn->arg[0])->red();
 	}
@@ -293,8 +293,8 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
 
-	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
-	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
+	t_item_const *lc = dynamic_cast<t_item_const *> (lhs.get());
+	t_item_const *rc = dynamic_cast<t_item_const *> (rhs.get());
 	if (lc && rc) {
 		return own.gener(lc->val / rc->val);
 	}
@@ -308,8 +308,8 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 		return lhs;
 	}
 
-	const t_item_neg *ln = dynamic_cast<const t_item_neg *> (lhs.get());
-	const t_item_neg *rn = dynamic_cast<const t_item_neg *> (rhs.get());
+	t_item_neg *ln = dynamic_cast<t_item_neg *> (lhs.get());
+	t_item_neg *rn = dynamic_cast<t_item_neg *> (rhs.get());
 	if (ln && rn) {
 		return (ln->arg[0] / rn->arg[0])->red();
 	}
@@ -328,8 +328,8 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
 
-	const t_item_const *lc = dynamic_cast<const t_item_const *> (lhs.get());
-	const t_item_const *rc = dynamic_cast<const t_item_const *> (rhs.get());
+	t_item_const *lc = dynamic_cast<t_item_const *> (lhs.get());
+	t_item_const *rc = dynamic_cast<t_item_const *> (rhs.get());
 	//TODO: ...
 	/*if (lc && rc) {
 		return own.gener(this->get());
