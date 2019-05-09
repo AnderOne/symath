@@ -334,6 +334,9 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 	/*if (lc && rc) {
 		return own.gener(this->get());
 	}*/
+	if (rc && (rc->val == 0)) {
+		return own.gener(1);
+	}
 	if (lc && (lc->val == 1)) {
 		return own.gener(1);
 	}
