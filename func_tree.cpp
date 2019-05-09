@@ -562,3 +562,9 @@ t_func_tree::t_func_tree() {
 }
 
 //...
+
+t_func_tree::t_item::~t_item() {
+	own.LINK.erase(this);
+}
+
+//...

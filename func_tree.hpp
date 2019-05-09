@@ -94,7 +94,7 @@ protected:
 		//...
 		h_item ref() { return own.LINK[this].lock(); }
 		//...
-		virtual ~t_item() {}
+		virtual ~t_item();
 		const t_func_tree &own;
 	};
 
