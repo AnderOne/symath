@@ -85,6 +85,7 @@ protected:
 
 	struct t_item {
 		explicit t_item(const t_func_tree &_own): own(_own) {}
+		virtual ~t_item();
 		virtual std::string str() const = 0;	//Переводит выражение в строку;
 		virtual h_item dif(char) const = 0;	//Возвращает производную;
 		virtual h_item red() const = 0;	//Сокращает выражение;
@@ -94,13 +95,12 @@ protected:
 		//...
 		h_item ref() { return own.LINK[this].lock(); }
 		//...
-		virtual ~t_item();
 		const t_func_tree &own;
 	};
 
-	struct t_item_const:
+	struct t_item_num:
 	public t_item {
-		explicit t_item_const(const t_func_tree &_own, t_long_frac _val):
+		explicit t_item_num(const t_func_tree &_own, t_long_frac _val):
 		         t_item(_own), val(_val) {}
 		std::string str() const override;
 		h_item dif(char) const override;
@@ -111,9 +111,9 @@ protected:
 		const t_long_frac val;
 	};
 
-	struct t_item_index:
+	struct t_item_var:
 	public t_item {
-		explicit t_item_index(const t_func_tree &_own, char _ind):
+		explicit t_item_var(const t_func_tree &_own, char _ind):
 		         t_item(_own), ind(_ind) {}
 		std::string str() const override;
 		h_item dif(char) const override;
@@ -124,28 +124,18 @@ protected:
 		const char ind;
 	};
 
-	template <int N>
-	struct t_item_arg: public t_item {
-		template<typename ... T,
-		         typename =
-		         typename std::enable_if<sizeof ... (T) == N>
-		         ::type>
-		explicit t_item_arg(const t_func_tree &_own,
-		                    const T & ... _arg):
-		         t_item(_own), arg{_arg ...}
-		         {}
-		explicit t_item_arg(const t_func_tree &_own):
-		         t_item(_own)
-		         {}
-		h_item arg[N];
+	struct t_item_bin:
+	public t_item {
+		explicit t_item_bin(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):
+		         t_item(_own),arg{_lhs, _rhs} {}
+		h_item arg[2];
 	};
 
-	//Для каждого вида операции свой тип узла:
-	#define __DECL_ITEM_TYPE(func, dim) \
-	struct t_item_##func: public t_item_arg<dim> {\
-		template <typename ... T>\
-		explicit t_item_##func(const T &... _arg):\
-		         t_item_arg<dim>(_arg ...) {}\
+	#define __DECL_ITEM_BIN(p) \
+	struct t_item_##p:\
+	public t_item_bin {\
+		explicit t_item_##p(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):\
+		         t_item_bin(_own, _lhs, _rhs) {}\
 		std::string str() const override;\
 		h_item dif(char) const override;\
 		h_item red() const override;\
@@ -155,19 +145,41 @@ protected:
 		h_item cpy() const override;\
 	};
 
-	__DECL_ITEM_TYPE(sqrt, 1)
-	__DECL_ITEM_TYPE(log, 1)
-	__DECL_ITEM_TYPE(exp, 1)
-	__DECL_ITEM_TYPE(cos, 1)
-	__DECL_ITEM_TYPE(sin, 1)
-	__DECL_ITEM_TYPE(neg, 1)
-	__DECL_ITEM_TYPE(sub, 2)
-	__DECL_ITEM_TYPE(add, 2)
-	__DECL_ITEM_TYPE(mul, 2)
-	__DECL_ITEM_TYPE(div, 2)
-	__DECL_ITEM_TYPE(pow, 2)
+	__DECL_ITEM_BIN(sub)
+	__DECL_ITEM_BIN(add)
+	__DECL_ITEM_BIN(mul)
+	__DECL_ITEM_BIN(div)
+	__DECL_ITEM_BIN(pow)
 
-	#undef __DECL_ITEM_TYPE
+	#undef __DECL_ITEM_BIN
+
+	struct t_item_one:
+	public t_item {
+		explicit t_item_one(const t_func_tree &_own, const h_item &_arg):
+		         t_item(_own), arg{_arg} {}
+		h_item arg;
+	};
+
+	#define __DECL_ITEM_ONE(p) \
+	struct t_item_##p:\
+	public t_item_one {\
+		explicit t_item_##p(const t_func_tree &_own, const h_item &_arg):\
+		         t_item_one(_own, _arg) {}\
+		std::string str() const override;\
+		h_item dif(char) const override;\
+		h_item red() const override;\
+		double get() const override;\
+		h_item cpy(const t_func_tree &)\
+		const override;\
+		h_item cpy() const override;\
+	};
+
+	__DECL_ITEM_ONE(exp)
+	__DECL_ITEM_ONE(log)
+	__DECL_ITEM_ONE(cos)
+	__DECL_ITEM_ONE(sin)
+
+	#undef __DECL_ITEM_ONE
 
 	friend struct t_item;
 
