@@ -125,6 +125,7 @@ protected:
 	public t_item {
 		explicit t_item_bin(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):
 		         t_item(_own),arg{_lhs, _rhs} {}
+		virtual h_item split(t_long_frac &_num) const = 0;
 		h_item arg[2];
 	};
 
@@ -133,6 +134,7 @@ protected:
 	public t_item_bin {\
 		explicit t_item_##p(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):\
 		         t_item_bin(_own, _lhs, _rhs) {}\
+		h_item split(t_long_frac &_num) const override;\
 		std::string str() const override;\
 		h_item dif(char) const override;\
 		h_item red() const override;\

@@ -158,6 +158,47 @@ t_func_tree::h_item t_func_tree::t_item_num::dif(char var) const {
 
 //Методы сокращения выражений:
 
+t_func_tree::h_item t_func_tree::t_item_sub::split(t_long_frac &_num) const {
+
+	t_item_num *num = dynamic_cast<t_item_num *> (arg[0].get());
+	if (num) {
+		_num =   num->val; return own.gener("-", arg[1]);
+	}
+	num = dynamic_cast<t_item_num *> (arg[1].get());
+	if (num) {
+		_num = - num->val;
+		return arg[0];
+	}
+	return nullptr;
+}
+
+t_func_tree::h_item t_func_tree::t_item_add::split(t_long_frac &_num) const {
+
+	t_item_num *num = dynamic_cast<t_item_num *> (arg[0].get());
+	if (num) {
+		_num = num->val;
+		return arg[1];
+	}
+	num = dynamic_cast<t_item_num *> (arg[1].get());
+	if (num) {
+		_num = num->val;
+		return arg[0];
+	}
+	return nullptr;
+}
+
+t_func_tree::h_item t_func_tree::t_item_mul::split(t_long_frac &_num) const {
+	return nullptr;
+}
+
+t_func_tree::h_item t_func_tree::t_item_div::split(t_long_frac &_num) const {
+	return nullptr;
+}
+
+t_func_tree::h_item t_func_tree::t_item_pow::split(t_long_frac &_num) const {
+	return nullptr;
+}
+
 t_func_tree::h_item t_func_tree::t_item_var::red() const { return cpy(); }
 
 t_func_tree::h_item t_func_tree::t_item_num::red() const { return cpy(); }
@@ -174,6 +215,22 @@ t_func_tree::h_item t_func_tree::t_item_sub::red() const {
 	}
 	if (rn && (rn->val == 0)) {
 		return lhs;
+	}
+
+	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
+	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
+	t_long_frac lv, rv;
+	h_item l2, r2;
+	if (lb) l2 = lb->split(lv);
+	if (rb) r2 = rb->split(rv);
+	if (l2 && r2) {
+		return own.gener(lv - rv) + (l2 - r2);
+	}
+	if (l2 && rn) {
+		return own.gener(lv - rn->val) + l2;
+	}
+	if (ln && r2) {
+		return own.gener(ln->val - rv) - r2;
 	}
 
 	return lhs - rhs;
@@ -194,6 +251,22 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	}
 	if (rn && (rn->val == 0)) {
 		return lhs;
+	}
+
+	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
+	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
+	t_long_frac lv, rv;
+	h_item l2, r2;
+	if (lb) l2 = lb->split(lv);
+	if (rb) r2 = rb->split(rv);
+	if (l2 && r2) {
+		return own.gener(lv + rv) + (l2 + r2);
+	}
+	if (l2 && rn) {
+		return own.gener(lv + rn->val) + l2;
+	}
+	if (ln && r2) {
+		return own.gener(ln->val + rv) + r2;
 	}
 
 	return lhs + rhs;
@@ -222,6 +295,19 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 		return lhs;
 	}
 
+	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
+	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
+	t_long_frac lv, rv;
+	h_item l2, r2;
+	if (lb) l2 = lb->split(lv);
+	if (rb) r2 = rb->split(rv);
+	if (l2 && rn) {
+		return own.gener(lv * rn->val) + l2 * rn->val;
+	}
+	if (ln && r2) {
+		return own.gener(ln->val * rv) + r2 * ln->val;
+	}
+
 	return lhs * rhs;
 }
 
@@ -241,6 +327,14 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	}
 	if (rn && (rn->val == 1)) {
 		return lhs;
+	}
+
+	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
+	t_long_frac lv;
+	h_item l2;
+	if (lb) l2 = lb->split(lv);
+	if (l2 && rn) {
+		return own.gener(lv / rn->val) + l2 / rn->val;
 	}
 
 	return lhs / rhs;
