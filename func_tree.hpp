@@ -177,6 +177,7 @@ protected:
 	__DECL_ITEM_ONE(log)
 	__DECL_ITEM_ONE(cos)
 	__DECL_ITEM_ONE(sin)
+	__DECL_ITEM_ONE(neg)
 
 	#undef __DECL_ITEM_ONE
 

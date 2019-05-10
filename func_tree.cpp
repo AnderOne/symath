@@ -45,6 +45,9 @@ __DEF_ITEM_ONE_CPY(log)
 __DEF_ITEM_ONE_CPY(cos)
 __DEF_ITEM_ONE_CPY(sin)
 
+t_func_tree::h_item t_func_tree::t_item_neg::cpy(const t_func_tree &_own) const { return _own.gener("-", arg); }
+t_func_tree::h_item t_func_tree::t_item_neg::cpy() const { return own.gener("-", arg); }
+
 #undef __DEF_ITEM_ONE_CPY
 
 //Перевод в строку:
@@ -75,6 +78,10 @@ __DEF_ITEM_ONE_STR(log)
 __DEF_ITEM_ONE_STR(cos)
 __DEF_ITEM_ONE_STR(sin)
 
+std::string t_func_tree::t_item_neg::str() const {
+	return "- (" + arg->str() + ")";
+}
+
 #undef __DEF_ITEM_ONE_STR
 
 //Вычисление выражения:
@@ -84,6 +91,9 @@ double t_func_tree::t_item_num::get() const { return val; }
 
 double t_func_tree::t_item_pow::get() const {
 	return std::pow(arg[0]->get(), arg[1]->get());
+}
+double t_func_tree::t_item_neg::get() const {
+	return - arg->get();
 }
 #define __DEF_ITEM_BIN_GET(ind, op) \
 double t_func_tree::t_item_##ind::get() const {\
@@ -148,6 +158,10 @@ t_func_tree::h_item t_func_tree::t_item_exp::dif(char var) const {
 	return arg->dif(var) * cpy();
 }
 
+t_func_tree::h_item t_func_tree::t_item_neg::dif(char var) const {
+	return - arg->dif(var);
+}
+
 t_func_tree::h_item t_func_tree::t_item_var::dif(char var) const {
 	return own.gener((ind == var)? 1: 0);
 }
@@ -203,6 +217,31 @@ t_func_tree::h_item t_func_tree::t_item_var::red() const { return cpy(); }
 
 t_func_tree::h_item t_func_tree::t_item_num::red() const { return cpy(); }
 
+t_func_tree::h_item t_func_tree::t_item_neg::red() const {
+
+	h_item lhs = arg->red();
+
+	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
+	if (ln) {
+		return own.gener(- ln->val);
+	}
+
+	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
+	t_long_frac lv;
+	h_item l2;
+	if (lb) l2 = lb->split(lv);
+	if (l2) {
+		return own.gener(- lv) - l2;
+	}
+
+	t_item_neg *lm = dynamic_cast<t_item_neg *> (lhs.get());
+	if (lm) {
+		return lm->arg;
+	}
+
+	return - lhs;
+}
+
 t_func_tree::h_item t_func_tree::t_item_sub::red() const {
 
 	h_item lhs = arg[0]->red();
@@ -212,6 +251,9 @@ t_func_tree::h_item t_func_tree::t_item_sub::red() const {
 	t_item_num *rn = dynamic_cast<t_item_num *> (rhs.get());
 	if (ln && rn) {
 		return own.gener(ln->val - rn->val);
+	}
+	if (ln && (ln->val == 0)) {
+		return (- rhs)->red();
 	}
 	if (rn && (rn->val == 0)) {
 		return lhs;
@@ -231,6 +273,18 @@ t_func_tree::h_item t_func_tree::t_item_sub::red() const {
 	}
 	if (ln && r2) {
 		return own.gener(ln->val - rv) - r2;
+	}
+
+	t_item_neg *lm = dynamic_cast<t_item_neg *> (lhs.get());
+	t_item_neg *rm = dynamic_cast<t_item_neg *> (rhs.get());
+	if (lm && rm) {
+		return rm->arg - lm->arg;
+	}
+	if (lm) {
+		return - (lm->arg + rhs);
+	}
+	if (rm) {
+		return lhs + rm->arg;
 	}
 
 	return lhs - rhs;
@@ -268,6 +322,19 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	if (ln && r2) {
 		return own.gener(ln->val + rv) + r2;
 	}
+
+	t_item_neg *lm = dynamic_cast<t_item_neg *> (lhs.get());
+	t_item_neg *rm = dynamic_cast<t_item_neg *> (rhs.get());
+	if (lm && rm) {
+		return - (lm->arg + rm->arg);
+	}
+	if (lm) {
+		return rhs - lm->arg;
+	}
+	if (rm) {
+		return lhs - rm->arg;
+	}
+
 
 	return lhs + rhs;
 }
@@ -414,7 +481,7 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const
 	if (str == "log") return store(new t_item_log(*this, rhs));
 	if (str == "cos") return store(new t_item_cos(*this, rhs));
 	if (str == "sin") return store(new t_item_sin(*this, rhs));
-	if (str == "-") return gener("-", gener(0), rhs);
+	if (str == "-") return store(new t_item_neg(*this, rhs));
 
 	return nullptr;
 }
