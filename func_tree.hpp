@@ -45,43 +45,40 @@ protected:
 		template <typename ... T>
 		h_item(T ... args): std::shared_ptr<t_item> (args ...) {}
 
-		inline h_item operator^(const h_item &rhs) const {
-			return get()->own.gener("^", *this, rhs);
-		}
-		inline h_item operator/(const h_item &rhs) const {
-			return get()->own.gener("/", *this, rhs);
-		}
-		inline h_item operator*(const h_item &rhs) const {
-			return get()->own.gener("*", *this, rhs);
-		}
-		inline h_item operator+(const h_item &rhs) const {
-			return get()->own.gener("+", *this, rhs);
-		}
-		inline h_item operator-(const h_item &rhs) const {
-			return get()->own.gener("-", *this, rhs);
+		#define __DECL_ITEM_BIN(p) \
+		inline h_item operator p(const h_item &rhs) const {\
+			return get()->own.gener(#p, *this, rhs);\
+		}\
+		inline h_item operator p(t_long_frac val) const {\
+			return get()->own.gener(\
+			#p, *this, get()->own.gener(val)\
+			);\
 		}
 		inline h_item operator-() const {
 			return get()->own.gener("-", *this);
 		}
+
+		__DECL_ITEM_BIN(-)
+		__DECL_ITEM_BIN(+)
+		__DECL_ITEM_BIN(*)
+		__DECL_ITEM_BIN(/)
+		__DECL_ITEM_BIN(^)
+
+		#undef __DECL_ITEM_BIN
+
 	};
 
 	//Математические функции:
-	inline h_item sqrt(const h_item &arg) const {
-		return gener("sqrt", arg);
-	}
-	inline h_item log(const h_item &arg) const {
-		return gener("log", arg);
-	}
-	inline h_item exp(const h_item &arg) const {
-		return gener("exp", arg);
-	}
-	inline h_item cos(const h_item &arg) const {
-		return gener("cos", arg);
-		
-	}
-	inline h_item sin(const h_item &arg) const {
-		return gener("sin", arg);
-	}
+	#define __DECL_ITEM_ONE(p) \
+	inline h_item p(const h_item &arg) const { return gener(#p, arg); }
+
+	__DECL_ITEM_ONE(sqrt)
+	__DECL_ITEM_ONE(exp)
+	__DECL_ITEM_ONE(log)
+	__DECL_ITEM_ONE(cos)
+	__DECL_ITEM_ONE(sin)
+
+	#undef __DECL_ITEM_ONE
 
 	struct t_item {
 		explicit t_item(const t_func_tree &_own): own(_own) {}
