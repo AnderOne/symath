@@ -1,19 +1,13 @@
 #include "func_tree.hpp"
 
-#include <type_traits>
 #include <exception>
 #include <cassert>
-#include <cerrno>
-#include <climits>
-#include <cctype>
-#include <cstdlib>
 #include <cmath>
 #include <regex>
 #include <algorithm>
 #include <vector>
 #include <string>
 #include <stack>
-#include <map>
 #include <set>
 
 //Методы клонирования узлов:
