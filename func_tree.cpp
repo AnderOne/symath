@@ -280,6 +280,14 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	if (rn && (rn->num == 0)) {
 		return own.gener(0);
 	}
+	if (ln) {
+		return
+		rhs->mul(ln->num);
+	}
+	if (rn) {
+		return
+		lhs->mul(rn->num);
+	}
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
 	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
