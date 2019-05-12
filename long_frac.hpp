@@ -4,7 +4,10 @@
 #include <gmpxx.h>
 #include <string>
 
-typedef mpz_class t_long;
+struct t_long: public mpz_class {
+	template <typename ... T> inline t_long(const T &... arg): mpz_class(arg ...) {}
+	inline operator long() { return get_si(); }
+};
 
 struct t_long_frac {
 
@@ -16,10 +19,10 @@ struct t_long_frac {
 	inline operator std::string() const { return val.get_str(); }
 	inline operator double() const { return val.get_d(); }
 
-	inline const t_long &upper() const {
+	inline t_long upper() const {
 		return val.get_num();
 	}
-	inline const t_long &lower() const {
+	inline t_long lower() const {
 		return val.get_den();
 	}
 	inline bool iszero() const {
