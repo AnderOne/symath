@@ -42,7 +42,7 @@ struct t_long_frac {
 	}
 	inline t_long_frac() {}
 
-	#define DEF_MATH_OPERATOR(op) \
+	#define __DEF_MATH_OPERATOR(op) \
 	t_long_frac operator op(const t_long_frac &rhs) const {\
 		return t_long_frac(val op rhs.val);\
 	}\
@@ -51,7 +51,7 @@ struct t_long_frac {
 		return t_long_frac(val op rhs);\
 	}
 
-	#define DEF_CMP_OPERATOR(op) \
+	#define __DEF_CMP_OPERATOR(op) \
 	bool operator op(const t_long_frac &rhs) const {\
 		return val op rhs.val;\
 	}\
@@ -60,7 +60,7 @@ struct t_long_frac {
 		return val op rhs;\
 	}
 
-	#define DEF_SET_OPERATOR(op) \
+	#define __DEF_SET_OPERATOR(op) \
 	template <typename T>\
 	t_long_frac operator op##= (const T &rhs) {\
 		return (*this) = (*this) op rhs;\
@@ -69,25 +69,26 @@ struct t_long_frac {
 	t_long_frac operator-() const {
 		return - val;
 	}
-	DEF_MATH_OPERATOR(-)
-	DEF_MATH_OPERATOR(+)
-	DEF_MATH_OPERATOR(*)
-	DEF_MATH_OPERATOR(/)
+	__DEF_MATH_OPERATOR(-)
+	__DEF_MATH_OPERATOR(+)
+	__DEF_MATH_OPERATOR(*)
+	__DEF_MATH_OPERATOR(/)
 
-	DEF_CMP_OPERATOR(==)
-	DEF_CMP_OPERATOR(!=)
-	DEF_CMP_OPERATOR(<=)
-	DEF_CMP_OPERATOR(>=)
-	DEF_CMP_OPERATOR(<)
-	DEF_CMP_OPERATOR(>)
+	__DEF_CMP_OPERATOR(==)
+	__DEF_CMP_OPERATOR(!=)
+	__DEF_CMP_OPERATOR(<=)
+	__DEF_CMP_OPERATOR(>=)
+	__DEF_CMP_OPERATOR(<)
+	__DEF_CMP_OPERATOR(>)
 
-	DEF_SET_OPERATOR(-)
-	DEF_SET_OPERATOR(+)
-	DEF_SET_OPERATOR(*)
-	DEF_SET_OPERATOR(/)
+	__DEF_SET_OPERATOR(-)
+	__DEF_SET_OPERATOR(+)
+	__DEF_SET_OPERATOR(*)
+	__DEF_SET_OPERATOR(/)
 
-	#undef DEF_MATH_OPERATOR
-	#undef DEF_CMP_OPERATOR
+	#undef __DEF_MATH_OPERATOR
+	#undef __DEF_CMP_OPERATOR
+	#undef __DEF_SET_OPERATOR
 
 private:
 	mpq_class val;

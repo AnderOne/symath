@@ -45,7 +45,7 @@ protected:
 		template <typename ... T>
 		h_item(T ... args): std::shared_ptr<t_item> (args ...) {}
 
-		#define __DECL_ITEM_BIN(p) \
+		#define __DEF_ITEM_BIN(p) \
 		inline h_item operator p(const h_item &rhs) const {\
 			return get()->own.gener(#p, *this, rhs);\
 		}\
@@ -58,27 +58,27 @@ protected:
 			return get()->own.gener("-", *this);
 		}
 
-		__DECL_ITEM_BIN(-)
-		__DECL_ITEM_BIN(+)
-		__DECL_ITEM_BIN(*)
-		__DECL_ITEM_BIN(/)
-		__DECL_ITEM_BIN(^)
+		__DEF_ITEM_BIN(-)
+		__DEF_ITEM_BIN(+)
+		__DEF_ITEM_BIN(*)
+		__DEF_ITEM_BIN(/)
+		__DEF_ITEM_BIN(^)
 
-		#undef __DECL_ITEM_BIN
+		#undef __DEF_ITEM_BIN
 
 	};
 
 	//Математические функции:
-	#define __DECL_ITEM_ONE(p) \
+	#define __DEF_ITEM_ONE(p) \
 	inline h_item p(const h_item &arg) const { return gener(#p, arg); }
 
-	__DECL_ITEM_ONE(sqrt)
-	__DECL_ITEM_ONE(exp)
-	__DECL_ITEM_ONE(log)
-	__DECL_ITEM_ONE(cos)
-	__DECL_ITEM_ONE(sin)
+	__DEF_ITEM_ONE(sqrt)
+	__DEF_ITEM_ONE(exp)
+	__DEF_ITEM_ONE(log)
+	__DEF_ITEM_ONE(cos)
+	__DEF_ITEM_ONE(sin)
 
-	#undef __DECL_ITEM_ONE
+	#undef __DEF_ITEM_ONE
 
 	struct t_item {
 		explicit t_item(const t_func_tree &_own, t_long_frac _num = 1): own(_own), num(_num) {}
@@ -130,7 +130,7 @@ protected:
 		h_item arg[2];
 	};
 
-	#define __DECL_ITEM_BIN(p) \
+	#define __DEF_ITEM_BIN(p) \
 	struct t_item_##p:\
 	public t_item_bin {\
 		explicit t_item_##p(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):\
@@ -145,12 +145,12 @@ protected:
 		h_item cpy() const override;\
 	};
 
-	__DECL_ITEM_BIN(add)
-	__DECL_ITEM_BIN(mul)
-	__DECL_ITEM_BIN(div)
-	__DECL_ITEM_BIN(pow)
+	__DEF_ITEM_BIN(add)
+	__DEF_ITEM_BIN(mul)
+	__DEF_ITEM_BIN(div)
+	__DEF_ITEM_BIN(pow)
 
-	#undef __DECL_ITEM_BIN
+	#undef __DEF_ITEM_BIN
 
 	struct t_item_one:
 	public t_item {
@@ -159,7 +159,7 @@ protected:
 		h_item arg;
 	};
 
-	#define __DECL_ITEM_ONE(p) \
+	#define __DEF_ITEM_ONE(p) \
 	struct t_item_##p:\
 	public t_item_one {\
 		explicit t_item_##p(const t_func_tree &_own, const h_item &_arg):\
@@ -173,12 +173,12 @@ protected:
 		h_item cpy() const override;\
 	};
 
-	__DECL_ITEM_ONE(exp)
-	__DECL_ITEM_ONE(log)
-	__DECL_ITEM_ONE(cos)
-	__DECL_ITEM_ONE(sin)
+	__DEF_ITEM_ONE(exp)
+	__DEF_ITEM_ONE(log)
+	__DEF_ITEM_ONE(cos)
+	__DEF_ITEM_ONE(sin)
 
-	#undef __DECL_ITEM_ONE
+	#undef __DEF_ITEM_ONE
 
 	friend struct t_item;
 

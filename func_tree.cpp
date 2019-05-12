@@ -444,9 +444,10 @@ t_func_tree::h_item t_func_tree::gener(long val) const {
 bool t_func_tree::create(std::string str) {
 
 	static const std::regex expr("^\\s*(((\\d+)(\\.(\\d+))?)|([a-z]+)|(\\()|([\\+\\-\\/\\^]|\\*|\\)))\\s*");
-	static const int IND_CONST = 2;
-	static const int IND_CONST_INT = 3;
+	//...
 	static const int IND_CONST_MAN = 5;
+	static const int IND_CONST_INT = 3;
+	static const int IND_CONST = 2;
 	static const int IND_INDEX = 6;
 	static const int IND_BRACE = 7;
 	static const int IND_BSIGN = 8;
