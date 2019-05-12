@@ -81,7 +81,7 @@ protected:
 	#undef __DECL_ITEM_ONE
 
 	struct t_item {
-		explicit t_item(const t_func_tree &_own): own(_own) {}
+		explicit t_item(const t_func_tree &_own, t_long_frac _num = 1): own(_own), num(_num) {}
 		virtual ~t_item();
 		virtual std::string str() const = 0;	//Переводит выражение в строку;
 		virtual h_item dif(char) const = 0;	//Возвращает производную;
@@ -90,22 +90,23 @@ protected:
 		virtual h_item cpy(const t_func_tree &) const = 0;
 		virtual h_item cpy() const = 0;
 		//...
+		h_item mul(t_long_frac _fac) { h_item ptr = ref(); ptr->num *= _fac; return ptr; }
 		h_item ref() { return own.LINK[this].lock(); }
 		//...
 		const t_func_tree &own;
+		t_long_frac num;
 	};
 
 	struct t_item_num:
 	public t_item {
-		explicit t_item_num(const t_func_tree &_own, t_long_frac _val):
-		         t_item(_own), val(_val) {}
+		explicit t_item_num(const t_func_tree &_own, t_long_frac _num):
+		         t_item{_own, _num} {}
 		std::string str() const override;
 		h_item dif(char) const override;
 		h_item red() const override;
 		double get() const override;
 		h_item cpy(const t_func_tree &) const override;
 		h_item cpy() const override;
-		const t_long_frac val;
 	};
 
 	struct t_item_var:
@@ -144,7 +145,6 @@ protected:
 		h_item cpy() const override;\
 	};
 
-	__DECL_ITEM_BIN(sub)
 	__DECL_ITEM_BIN(add)
 	__DECL_ITEM_BIN(mul)
 	__DECL_ITEM_BIN(div)
@@ -177,7 +177,6 @@ protected:
 	__DECL_ITEM_ONE(log)
 	__DECL_ITEM_ONE(cos)
 	__DECL_ITEM_ONE(sin)
-	__DECL_ITEM_ONE(neg)
 
 	#undef __DECL_ITEM_ONE
 

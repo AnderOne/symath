@@ -18,17 +18,16 @@
 
 //Методы клонирования узлов:
 
-t_func_tree::h_item t_func_tree::t_item_var::cpy(const t_func_tree &_own) const { return _own.gener(std::string(1, ind)); }
-t_func_tree::h_item t_func_tree::t_item_var::cpy() const { return own.gener(std::string(1, ind)); }
+t_func_tree::h_item t_func_tree::t_item_var::cpy(const t_func_tree &_own) const { return _own.gener(std::string(1, ind))->mul(num); }
+t_func_tree::h_item t_func_tree::t_item_var::cpy() const { return own.gener(std::string(1, ind))->mul(num); }
 
-t_func_tree::h_item t_func_tree::t_item_num::cpy(const t_func_tree &_own) const { return _own.gener(val); }
-t_func_tree::h_item t_func_tree::t_item_num::cpy() const { return own.gener(val); }
+t_func_tree::h_item t_func_tree::t_item_num::cpy(const t_func_tree &_own) const { return _own.gener(num); }
+t_func_tree::h_item t_func_tree::t_item_num::cpy() const { return own.gener(num); }
 
 #define __DEF_ITEM_BIN_CPY(ind, op) \
-t_func_tree::h_item t_func_tree::t_item_##ind::cpy(const t_func_tree &_own) const { return _own.gener(#op, arg[0], arg[1]); }\
-t_func_tree::h_item t_func_tree::t_item_##ind::cpy() const { return own.gener(#op, arg[0], arg[1]); }
+t_func_tree::h_item t_func_tree::t_item_##ind::cpy(const t_func_tree &_own) const { return _own.gener(#op, arg[0], arg[1])->mul(num); }\
+t_func_tree::h_item t_func_tree::t_item_##ind::cpy() const { return own.gener(#op, arg[0], arg[1])->mul(num); }
 
-__DEF_ITEM_BIN_CPY(sub, -)
 __DEF_ITEM_BIN_CPY(add, +)
 __DEF_ITEM_BIN_CPY(mul, *)
 __DEF_ITEM_BIN_CPY(div, /)
@@ -37,31 +36,51 @@ __DEF_ITEM_BIN_CPY(pow, ^)
 #undef __DEF_ITEM_BIN_CPY
 
 #define __DEF_ITEM_ONE_CPY(ind) \
-t_func_tree::h_item t_func_tree::t_item_##ind::cpy(const t_func_tree &_own) const { return _own.gener(#ind, arg); }\
-t_func_tree::h_item t_func_tree::t_item_##ind::cpy() const { return own.gener(#ind, arg); }
+t_func_tree::h_item t_func_tree::t_item_##ind::cpy(const t_func_tree &_own) const { return _own.gener(#ind, arg)->mul(num); }\
+t_func_tree::h_item t_func_tree::t_item_##ind::cpy() const { return own.gener(#ind, arg)->mul(num); }
 
 __DEF_ITEM_ONE_CPY(exp)
 __DEF_ITEM_ONE_CPY(log)
 __DEF_ITEM_ONE_CPY(cos)
 __DEF_ITEM_ONE_CPY(sin)
 
-t_func_tree::h_item t_func_tree::t_item_neg::cpy(const t_func_tree &_own) const { return _own.gener("-", arg); }
-t_func_tree::h_item t_func_tree::t_item_neg::cpy() const { return own.gener("-", arg); }
-
 #undef __DEF_ITEM_ONE_CPY
 
 //Перевод в строку:
 
-std::string t_func_tree::t_item_var::str() const { return std::string(1, ind); }
-std::string t_func_tree::t_item_num::str() const { return val; }
+std::string t_func_tree::t_item_var::str() const {
+	return ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (std::string(abs(num)) + " * "): ("")) + std::string(1, ind);
+}
+
+std::string t_func_tree::t_item_num::str() const {
+	return ((num < 0)? ("- "): ("")) + std::string(abs(num));
+}
+
+std::string t_func_tree::t_item_add::str() const {
+	std::string tmp;
+	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (std::string(abs(num)) + " * "): (""));
+	tmp += "(";
+	tmp += arg[0]->str();
+	tmp += (arg[1]->num >= 0)?
+	       (" + "):
+	       (" ");
+	tmp += arg[1]->str();
+	tmp += ")";
+	return tmp;
+}
 
 #define __DEF_ITEM_BIN_STR(ind, op) \
 std::string t_func_tree::t_item_##ind::str() const {\
-	return "(" + arg[0]->str() + ") "#op" (" + arg[1]->str() + ")";\
+	std::string tmp;\
+	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (std::string(abs(num)) + " * "): (""));\
+	tmp += "((";\
+	tmp += arg[0]->str();\
+	tmp += ") "#op" (";\
+	tmp += arg[1]->str();\
+	tmp += "))";\
+	return tmp;\
 }
 
-__DEF_ITEM_BIN_STR(sub, -)
-__DEF_ITEM_BIN_STR(add, +)
 __DEF_ITEM_BIN_STR(mul, *)
 __DEF_ITEM_BIN_STR(div, /)
 __DEF_ITEM_BIN_STR(pow, ^)
@@ -70,7 +89,12 @@ __DEF_ITEM_BIN_STR(pow, ^)
 
 #define __DEF_ITEM_ONE_STR(ind) \
 std::string t_func_tree::t_item_##ind::str() const {\
-	return #ind"(" + arg->str() + ")";\
+	std::string tmp;\
+	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (std::string(abs(num)) + " * "): (""));\
+	tmp += #ind"(";\
+	tmp += arg->str();\
+	tmp += ")";\
+	return tmp;\
 }
 
 __DEF_ITEM_ONE_STR(exp)
@@ -78,29 +102,22 @@ __DEF_ITEM_ONE_STR(log)
 __DEF_ITEM_ONE_STR(cos)
 __DEF_ITEM_ONE_STR(sin)
 
-std::string t_func_tree::t_item_neg::str() const {
-	return "- (" + arg->str() + ")";
-}
-
 #undef __DEF_ITEM_ONE_STR
 
 //Вычисление выражения:
 
-double t_func_tree::t_item_var::get() const { return own[ind]; }
-double t_func_tree::t_item_num::get() const { return val; }
+double t_func_tree::t_item_var::get() const { return num * own[ind]; }
+double t_func_tree::t_item_num::get() const { return num; }
 
 double t_func_tree::t_item_pow::get() const {
-	return std::pow(arg[0]->get(), arg[1]->get());
-}
-double t_func_tree::t_item_neg::get() const {
-	return - arg->get();
-}
-#define __DEF_ITEM_BIN_GET(ind, op) \
-double t_func_tree::t_item_##ind::get() const {\
-	return arg[0]->get() op arg[1]->get();\
+	return num * std::pow(arg[0]->get(), arg[1]->get());
 }
 
-__DEF_ITEM_BIN_GET(sub, -)
+#define __DEF_ITEM_BIN_GET(ind, op) \
+double t_func_tree::t_item_##ind::get() const {\
+	return num * (arg[0]->get() op arg[1]->get());\
+}
+
 __DEF_ITEM_BIN_GET(add, +)
 __DEF_ITEM_BIN_GET(mul, *)
 __DEF_ITEM_BIN_GET(div, /)
@@ -109,7 +126,7 @@ __DEF_ITEM_BIN_GET(div, /)
 
 #define __DEF_ITEM_ONE_GET(ind) \
 double t_func_tree::t_item_##ind::get() const {\
-	return std::ind(arg->get());\
+	return num * std::ind(arg->get());\
 }
 
 __DEF_ITEM_ONE_GET(exp)
@@ -122,80 +139,68 @@ __DEF_ITEM_ONE_GET(sin)
 //Методы дифференцирования узлов:
 
 t_func_tree::h_item t_func_tree::t_item_pow::dif(char var) const {
-	return arg[1]->cpy() * arg[0]->dif(var) * (arg[0]->cpy() ^ (arg[1]->cpy() - own.gener(1))) +
-	       arg[1]->dif(var) * own.log(arg[0]->cpy()) * cpy();
+	h_item hand = arg[1]->cpy() * arg[0]->dif(var) * (arg[0]->cpy() ^ (arg[1]->cpy() - own.gener(1))) +
+	              arg[1]->dif(var) * own.log(arg[0]->cpy()) * cpy();
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_div::dif(char var) const {
-	return arg[0]->dif(var) / arg[1]->cpy() - arg[0]->cpy() * arg[1]->dif(var) / arg[1]->cpy();
+	h_item hand = arg[0]->dif(var) / arg[1]->cpy() - arg[0]->cpy() * arg[1]->dif(var) / arg[1]->cpy();
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_mul::dif(char var) const {
-	return arg[0]->dif(var) * arg[1]->cpy() + arg[0]->cpy() * arg[1]->dif(var);
+	h_item hand = arg[0]->dif(var) * arg[1]->cpy() + arg[0]->cpy() * arg[1]->dif(var);
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_add::dif(char var) const {
-	return arg[0]->dif(var) + arg[1]->dif(var);
-}
-
-t_func_tree::h_item t_func_tree::t_item_sub::dif(char var) const {
-	return arg[0]->dif(var) - arg[1]->dif(var);
+	h_item hand = arg[0]->dif(var) + arg[1]->dif(var);
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_cos::dif(char var) const {
-	return - (arg->dif(var) * own.sin(arg->cpy()));
+	h_item hand = - (arg->dif(var) * own.sin(arg->cpy()));
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_sin::dif(char var) const {
-	return arg->dif(var) * own.cos(arg->cpy());
+	h_item hand = arg->dif(var) * own.cos(arg->cpy());
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_log::dif(char var) const {
-	return arg->dif(var) / arg->cpy();
+	h_item hand = arg->dif(var) / arg->cpy();
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_exp::dif(char var) const {
-	return arg->dif(var) * cpy();
-}
-
-t_func_tree::h_item t_func_tree::t_item_neg::dif(char var) const {
-	return - arg->dif(var);
+	h_item hand = arg->dif(var) * cpy();
+	return hand->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_var::dif(char var) const {
-	return own.gener((ind == var)? 1: 0);
+	h_item hand = own.gener((ind == var)? num: t_long_frac(0));
+	return hand;
 }
 
 t_func_tree::h_item t_func_tree::t_item_num::dif(char var) const {
-	return own.gener(0);
+	h_item hand = own.gener(0);
+	return hand;
 }
 
 //Методы сокращения выражений:
 
-t_func_tree::h_item t_func_tree::t_item_sub::split(t_long_frac &_num) const {
-
-	t_item_num *num = dynamic_cast<t_item_num *> (arg[0].get());
-	if (num) {
-		_num =   num->val; return own.gener("-", arg[1]);
-	}
-	num = dynamic_cast<t_item_num *> (arg[1].get());
-	if (num) {
-		_num = - num->val;
-		return arg[0];
-	}
-	return nullptr;
-}
-
 t_func_tree::h_item t_func_tree::t_item_add::split(t_long_frac &_num) const {
 
-	t_item_num *num = dynamic_cast<t_item_num *> (arg[0].get());
-	if (num) {
-		_num = num->val;
+	t_item_num *ptr = dynamic_cast<t_item_num *> (arg[0].get());
+	if (ptr) {
+		_num = ptr->num;
 		return arg[1];
 	}
-	num = dynamic_cast<t_item_num *> (arg[1].get());
-	if (num) {
-		_num = num->val;
+	ptr = dynamic_cast<t_item_num *> (arg[1].get());
+	if (ptr) {
+		_num = ptr->num;
 		return arg[0];
 	}
 	return nullptr;
@@ -217,79 +222,6 @@ t_func_tree::h_item t_func_tree::t_item_var::red() const { return cpy(); }
 
 t_func_tree::h_item t_func_tree::t_item_num::red() const { return cpy(); }
 
-t_func_tree::h_item t_func_tree::t_item_neg::red() const {
-
-	h_item lhs = arg->red();
-
-	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
-	if (ln) {
-		return own.gener(- ln->val);
-	}
-
-	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
-	t_long_frac lv;
-	h_item l2;
-	if (lb) l2 = lb->split(lv);
-	if (l2) {
-		return own.gener(- lv) - l2;
-	}
-
-	t_item_neg *lm = dynamic_cast<t_item_neg *> (lhs.get());
-	if (lm) {
-		return lm->arg;
-	}
-
-	return - lhs;
-}
-
-t_func_tree::h_item t_func_tree::t_item_sub::red() const {
-
-	h_item lhs = arg[0]->red();
-	h_item rhs = arg[1]->red();
-
-	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
-	t_item_num *rn = dynamic_cast<t_item_num *> (rhs.get());
-	if (ln && rn) {
-		return own.gener(ln->val - rn->val);
-	}
-	if (ln && (ln->val == 0)) {
-		return (- rhs)->red();
-	}
-	if (rn && (rn->val == 0)) {
-		return lhs;
-	}
-
-	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
-	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
-	t_long_frac lv, rv;
-	h_item l2, r2;
-	if (lb) l2 = lb->split(lv);
-	if (rb) r2 = rb->split(rv);
-	if (l2 && r2) {
-		return own.gener(lv - rv) + (l2 - r2);
-	}
-	if (l2 && rn) {
-		return own.gener(lv - rn->val) + l2;
-	}
-	if (ln && r2) {
-		return own.gener(ln->val - rv) - r2;
-	}
-
-	t_item_neg *lm = dynamic_cast<t_item_neg *> (lhs.get());
-	t_item_neg *rm = dynamic_cast<t_item_neg *> (rhs.get());
-	if (lm && rm) {
-		return rm->arg - lm->arg;
-	}
-	if (lm) {
-		return - (lm->arg + rhs);
-	}
-	if (rm) {
-		return lhs + rm->arg;
-	}
-
-	return lhs - rhs;
-}
-
 t_func_tree::h_item t_func_tree::t_item_add::red() const {
 
 	h_item lhs = arg[0]->red();
@@ -298,13 +230,13 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
 	t_item_num *rn = dynamic_cast<t_item_num *> (rhs.get());
 	if (ln && rn) {
-		return own.gener(ln->val + rn->val);
+		return own.gener(ln->num + rn->num)->mul(num);
 	}
-	if (ln && (ln->val == 0)) {
-		return rhs;
+	if (ln && (ln->num == 0)) {
+		return rhs->mul(num);
 	}
-	if (rn && (rn->val == 0)) {
-		return lhs;
+	if (rn && (rn->num == 0)) {
+		return lhs->mul(num);
 	}
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
@@ -314,29 +246,16 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	if (lb) l2 = lb->split(lv);
 	if (rb) r2 = rb->split(rv);
 	if (l2 && r2) {
-		return own.gener(lv + rv) + (l2 + r2);
+		return (own.gener(lv + rv) + (l2 + r2))->mul(num);
 	}
 	if (l2 && rn) {
-		return own.gener(lv + rn->val) + l2;
+		return (own.gener(lv + rn->num) + l2)->mul(num);
 	}
 	if (ln && r2) {
-		return own.gener(ln->val + rv) + r2;
+		return (own.gener(ln->num + rv) + r2)->mul(num);
 	}
 
-	t_item_neg *lm = dynamic_cast<t_item_neg *> (lhs.get());
-	t_item_neg *rm = dynamic_cast<t_item_neg *> (rhs.get());
-	if (lm && rm) {
-		return - (lm->arg + rm->arg);
-	}
-	if (lm) {
-		return rhs - lm->arg;
-	}
-	if (rm) {
-		return lhs - rm->arg;
-	}
-
-
-	return lhs + rhs;
+	return (lhs + rhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_mul::red() const {
@@ -347,19 +266,19 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
 	t_item_num *rn = dynamic_cast<t_item_num *> (rhs.get());
 	if (ln && rn) {
-		return own.gener(ln->val * rn->val);
+		return own.gener(ln->num * rn->num)->mul(num);
 	}
-	if (ln && (ln->val == 0)) {
+	if (ln && (std::abs(ln->num) == 1)) {
+		return rhs->mul(ln->num * num);
+	}
+	if (rn && (std::abs(rn->num) == 1)) {
+		return lhs->mul(rn->num * num);
+	}
+	if (ln && (ln->num == 0)) {
 		return own.gener(0);
 	}
-	if (rn && (rn->val == 0)) {
+	if (rn && (rn->num == 0)) {
 		return own.gener(0);
-	}
-	if (ln && (ln->val == 1)) {
-		return rhs;
-	}
-	if (rn && (rn->val == 1)) {
-		return lhs;
 	}
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
@@ -369,13 +288,13 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	if (lb) l2 = lb->split(lv);
 	if (rb) r2 = rb->split(rv);
 	if (l2 && rn) {
-		return own.gener(lv * rn->val) + l2 * rn->val;
+		return (own.gener(lv * rn->num) + l2->mul(rn->num))->mul(num);
 	}
 	if (ln && r2) {
-		return own.gener(ln->val * rv) + r2 * ln->val;
+		return (own.gener(ln->num * rv) + r2->mul(ln->num))->mul(num);
 	}
 
-	return lhs * rhs;
+	return (lhs * rhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_div::red() const {
@@ -386,14 +305,13 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
 	t_item_num *rn = dynamic_cast<t_item_num *> (rhs.get());
 	if (ln && rn) {
-		return own.gener((ln->val) /
-		                 (rn->val));
+		return own.gener(ln->num / rn->num)->mul(num);
 	}
-	if (ln && (ln->val == 0)) {
+	if (rn && (std::abs(rn->num) == 1)) {
+		return lhs->mul(rn->num * num);
+	}
+	if (ln && (ln->num == 0)) {
 		return own.gener(0);
-	}
-	if (rn && (rn->val == 1)) {
-		return lhs;
 	}
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
@@ -401,10 +319,10 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	h_item l2;
 	if (lb) l2 = lb->split(lv);
 	if (l2 && rn) {
-		return own.gener(lv / rn->val) + l2 / rn->val;
+		return (own.gener(lv / rn->num) + l2 / rn->num)->mul(num);
 	}
 
-	return lhs / rhs;
+	return (lhs / rhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_pow::red() const {
@@ -418,45 +336,45 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 	/*if (ln && rn) {
 		//...
 	}*/
-	if (rn && (rn->val == 0)) {
+	if (rn && (rn->num == 0)) {
 		return own.gener(1);
 	}
-	if (ln && (ln->val == 1)) {
+	if (ln && (ln->num == 1)) {
 		return own.gener(1);
 	}
-	if (rn && (rn->val == 1)) {
-		return lhs;
+	if (rn && (rn->num == 1)) {
+		return lhs->mul(num);
 	}
 
-	return lhs ^ rhs;
+	return (lhs ^ rhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_exp::red() const {
 
 	h_item lhs = arg->red();
 	//TODO: ...
-	return own.exp(lhs);
+	return own.exp(lhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_log::red() const {
 
 	h_item lhs = arg->red();
 	//TODO: ...
-	return own.log(lhs);
+	return own.log(lhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_cos::red() const {
 
 	h_item lhs = arg->red();
 	//TODO: ...
-	return own.cos(lhs);
+	return own.cos(lhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_sin::red() const {
 
 	h_item lhs = arg->red();
 	//TODO: ...
-	return own.sin(lhs);
+	return own.sin(lhs)->mul(num);
 }
 
 //Генераторы узлов:
@@ -465,7 +383,7 @@ t_func_tree::h_item t_func_tree::store(t_item *&& _ptr) const { h_item hand(_ptr
 
 t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &lhs, const h_item &rhs) const {
 
-	if (str == "-") return store(new t_item_sub(*this, lhs, rhs));
+	if (str == "-") return store(new t_item_add(*this, lhs, rhs->mul(-1)));
 	if (str == "+") return store(new t_item_add(*this, lhs, rhs));
 	if (str == "*") return store(new t_item_mul(*this, lhs, rhs));
 	if (str == "/") return store(new t_item_div(*this, lhs, rhs));
@@ -481,7 +399,7 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const
 	if (str == "log") return store(new t_item_log(*this, rhs));
 	if (str == "cos") return store(new t_item_cos(*this, rhs));
 	if (str == "sin") return store(new t_item_sin(*this, rhs));
-	if (str == "-") return store(new t_item_neg(*this, rhs));
+	if (str == "-") return rhs->mul(-1);
 
 	return nullptr;
 }
