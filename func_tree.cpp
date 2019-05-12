@@ -246,13 +246,13 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	if (lb) l2 = lb->split(lv);
 	if (rb) r2 = rb->split(rv);
 	if (l2 && r2) {
-		return (own.gener(lv + rv) + (l2 + r2))->mul(num);
+		return (own.gener(lv * lb->num + rv * rb->num) + (l2->mul(lb->num) + r2->mul(rb->num)))->mul(num);
 	}
 	if (l2 && rn) {
-		return (own.gener(lv + rn->num) + l2)->mul(num);
+		return (own.gener(lv * lb->num + rn->num) + l2->mul(lb->num))->mul(num);
 	}
 	if (ln && r2) {
-		return (own.gener(ln->num + rv) + r2)->mul(num);
+		return (own.gener(ln->num + rv * rb->num) + r2->mul(rb->num))->mul(num);
 	}
 
 	return (lhs + rhs)->mul(num);
@@ -288,10 +288,10 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	if (lb) l2 = lb->split(lv);
 	if (rb) r2 = rb->split(rv);
 	if (l2 && rn) {
-		return (own.gener(lv * rn->num) + l2->mul(rn->num))->mul(num);
+		return (own.gener(lv * lb->num * rn->num) + l2->mul(lb->num * rn->num))->mul(num);
 	}
 	if (ln && r2) {
-		return (own.gener(ln->num * rv) + r2->mul(ln->num))->mul(num);
+		return (own.gener(ln->num * rv * rb->num) + r2->mul(rb->num * ln->num))->mul(num);
 	}
 
 	return (lhs * rhs)->mul(num);
@@ -319,7 +319,7 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	h_item l2;
 	if (lb) l2 = lb->split(lv);
 	if (l2 && rn) {
-		return (own.gener(lv / rn->num) + l2 / rn->num)->mul(num);
+		return (own.gener((lv * lb->num) / rn->num) + l2->mul(lb->num) / rn->num)->mul(num);
 	}
 
 	return (lhs / rhs)->mul(num);
