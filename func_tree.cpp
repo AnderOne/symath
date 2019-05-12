@@ -340,19 +340,17 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 
 	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
 	t_item_num *rn = dynamic_cast<t_item_num *> (rhs.get());
-	//TODO: ...
-	/*if (ln && rn) {
-		//...
-	}*/
-	if (rn && (rn->num == 0)) {
-		return own.gener(1);
+	if (ln && rn) {
+		//NOTE: We use constraint on a maximum degree!
+		if (rn->num.isint() && (abs(rn->num) < 100)) {
+			return own.gener(
+				pow(ln->num, rn->num.upper())
+			)->mul(num);
+		}
 	}
-	if (ln && (ln->num == 1)) {
-		return own.gener(1);
-	}
-	if (rn && (rn->num == 1)) {
-		return lhs->mul(num);
-	}
+	if (rn && (rn->num == 0)) { return own.gener(1); }
+	if (ln && (ln->num == 1)) { return own.gener(1); }
+	if (rn && (rn->num == 1)) return lhs->mul(num);
 
 	return (lhs ^ rhs)->mul(num);
 }
@@ -360,29 +358,40 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 t_func_tree::h_item t_func_tree::t_item_exp::red() const {
 
 	h_item lhs = arg->red();
-	//TODO: ...
-	return own.exp(lhs)->mul(num);
+	if (lhs->num == 0) { return own.gener(num); }
+	return
+	own.exp(lhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_log::red() const {
 
 	h_item lhs = arg->red();
-	//TODO: ...
-	return own.log(lhs)->mul(num);
+	if (dynamic_cast<t_item_num *> (lhs.get()) &&
+	    lhs->num == 1) {
+		return own.gener(0);
+	}
+	return
+	own.log(lhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_cos::red() const {
 
 	h_item lhs = arg->red();
-	//TODO: ...
-	return own.cos(lhs)->mul(num);
+	if (lhs->num == 0) {
+		return own.gener(num);
+	}
+	return
+	own.cos(lhs)->mul(num);
 }
 
 t_func_tree::h_item t_func_tree::t_item_sin::red() const {
 
 	h_item lhs = arg->red();
-	//TODO: ...
-	return own.sin(lhs)->mul(num);
+	if (lhs->num == 0) {
+		return own.gener(0);
+	}
+	return
+	own.sin(lhs)->mul(num);
 }
 
 //Генераторы узлов:
