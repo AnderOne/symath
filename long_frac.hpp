@@ -10,6 +10,8 @@ struct t_long_frac {
 
 	friend std::ostream &operator << (std::ostream &out, const t_long_frac &src);
 	friend std::istream &operator >> (std::istream &inp, t_long_frac &dst);
+	friend t_long_frac pow(const t_long_frac &src, long deg);
+	friend t_long_frac abs(const t_long_frac &);
 
 	inline operator std::string() const { return val.get_str(); }
 	inline operator double() const { return val.get_d(); }
@@ -85,7 +87,6 @@ struct t_long_frac {
 	#undef DEF_CMP_OPERATOR
 
 private:
-	friend t_long_frac abs(const t_long_frac &);
 	mpq_class val;
 };
 
@@ -95,6 +96,18 @@ inline std::ostream &operator << (std::ostream &out, const t_long_frac &src) {
 
 inline std::istream &operator >> (std::istream &inp, t_long_frac &dst) {
 	return inp >> dst.val;
+}
+
+inline t_long_frac pow(const t_long_frac &src, long deg) {
+	unsigned long n = std::abs(deg);
+	mpq_class b = src.val, a = 1;
+	while (n) {
+		if (n & 1) a *= b;
+		b *= b;
+		n /= 2;
+	}
+	if (deg < 0) a = 1 / a;
+	return t_long_frac(a);
 }
 
 inline t_long_frac abs(const t_long_frac &src) {
