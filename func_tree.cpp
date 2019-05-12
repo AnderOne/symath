@@ -280,14 +280,6 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	if (rn && (rn->num == 0)) {
 		return own.gener(0);
 	}
-	if (ln) {
-		return
-		rhs->mul(ln->num);
-	}
-	if (rn) {
-		return
-		lhs->mul(rn->num);
-	}
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
 	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
@@ -301,8 +293,17 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	if (ln && r2) {
 		return (own.gener(ln->num * rv * rb->num) + r2->mul(rb->num * ln->num))->mul(num);
 	}
-
-	return (lhs * rhs)->mul(num);
+	if (ln) {
+		return rhs->mul(ln->num);
+	}
+	if (rn) {
+		return lhs->mul(rn->num);
+	}
+	t_long_frac n =
+	     num * lhs->num * rhs->num;
+	lhs->num = 1;
+	rhs->num = 1;
+	return (lhs * rhs)->mul(n);
 }
 
 t_func_tree::h_item t_func_tree::t_item_div::red() const {
@@ -312,14 +313,11 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 
 	t_item_num *ln = dynamic_cast<t_item_num *> (lhs.get());
 	t_item_num *rn = dynamic_cast<t_item_num *> (rhs.get());
-	if (ln && rn) {
-		return own.gener(ln->num / rn->num)->mul(num);
-	}
-	if (rn && (std::abs(rn->num) == 1)) {
-		return lhs->mul(rn->num * num);
-	}
 	if (ln && (ln->num == 0)) {
 		return own.gener(0);
+	}
+	if (ln && rn) {
+		return own.gener(ln->num / rn->num)->mul(num);
 	}
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
@@ -327,10 +325,17 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	h_item l2;
 	if (lb) l2 = lb->split(lv);
 	if (l2 && rn) {
-		return (own.gener((lv * lb->num) / rn->num) + l2->mul(lb->num) / rn->num)->mul(num);
+		return (own.gener((lv * lb->num) / rn->num) + l2->mul(lb->num / rn->num))->mul(num);
+	}
+	if (rn) {
+		return lhs->mul(num / rn->num);
 	}
 
-	return (lhs / rhs)->mul(num);
+	t_long_frac n =
+	     num * lhs->num / rhs->num;
+	lhs->num = 1;
+	rhs->num = 1;
+	return (lhs / rhs)->mul(n);
 }
 
 t_func_tree::h_item t_func_tree::t_item_pow::red() const {
