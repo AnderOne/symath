@@ -308,10 +308,10 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 		return (own.gener(ln->num * rv * rb->num) + r2->mul(rb->num * ln->num))->mul(num);
 	}
 	if (ln) {
-		return rhs->mul(ln->num);
+		return (rhs->mul(ln->num))->mul(num);
 	}
 	if (rn) {
-		return lhs->mul(rn->num);
+		return (lhs->mul(rn->num))->mul(num);
 	}
 	t_long_frac n =
 	     num * lhs->num * rhs->num;
