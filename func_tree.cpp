@@ -435,6 +435,7 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const
 	if (str == "log") return store(new t_item_log(*this, rhs));
 	if (str == "cos") return store(new t_item_cos(*this, rhs));
 	if (str == "sin") return store(new t_item_sin(*this, rhs));
+	if (str == "-u") return rhs->mul(-1);
 	if (str == "-") return rhs->mul(-1);
 
 	return nullptr;
@@ -479,7 +480,8 @@ bool t_func_tree::create(std::string str) {
 	//...
 	static std::map<std::string, int> LEVEL;
 	static std::set<std::string> FUNC1;
-	static std::set<std::string> FUNC2;
+	static std::set<std::string> SIGN1;
+	static std::set<std::string> SIGN2;
 	static bool start = true;
 	if (start) {
 		FUNC1.insert("sqrt");
@@ -488,13 +490,16 @@ bool t_func_tree::create(std::string str) {
 		FUNC1.insert("cos");
 		FUNC1.insert("sin");
 		//...
-		FUNC2.insert("^");
-		FUNC2.insert("/");
-		FUNC2.insert("*");
-		FUNC2.insert("+");
-		FUNC2.insert("-");
+		SIGN1.insert("-u");
+		//...
+		SIGN2.insert("-");
+		SIGN2.insert("+");
+		SIGN2.insert("*");
+		SIGN2.insert("/");
+		SIGN2.insert("^");
 		//...
 		LEVEL["sqrt"] = LEVEL["log"] = LEVEL["exp"] = LEVEL["cos"] = LEVEL["sin"] = 6;
+		LEVEL["-u"] = 6;
 		LEVEL["^"] = 5;
 		LEVEL["/"] = LEVEL["*"] = 4;
 		LEVEL["+"] = LEVEL["-"] = 3;
@@ -528,7 +533,7 @@ bool t_func_tree::create(std::string str) {
 			int cur = LEVEL[tmp];
 			while (!SIGN.empty() && (LEVEL[SIGN.top()] >= cur)) {
 				//Для бинарных операторов:
-				if (FUNC2.count(SIGN.top())) {
+				if (SIGN2.count(SIGN.top())) {
 					h_item rhs = OPER.top();
 					OPER.pop();
 					h_item lhs = OPER.top();
@@ -536,7 +541,7 @@ bool t_func_tree::create(std::string str) {
 					OPER.push(gener(SIGN.top(), lhs, rhs));
 				}
 				//Для унарных операторов:
-				if (FUNC1.count(SIGN.top())) {
+				if (SIGN1.count(SIGN.top())) {
 					h_item rhs = OPER.top();
 					OPER.pop();
 					OPER.push(gener(SIGN.top(), rhs));
@@ -544,8 +549,9 @@ bool t_func_tree::create(std::string str) {
 				SIGN.pop();
 			}
 			if (tmp == "-" && state == IS_START) {
-				OPER.push(gener(0));
+				SIGN.push("-u");
 			}
+			else
 			if (tmp == ")") {
 				state = IS_VALUE;
 				if (!SIGN.size()) {
@@ -571,7 +577,7 @@ bool t_func_tree::create(std::string str) {
 			if (state == IS_VALUE) {
 				throw std::logic_error("Incorrect location of the operands!");
 			}
-			if (!FUNC1.count(tmp) && !FUNC2.count(tmp)) {
+			if (!FUNC1.count(tmp) && !SIGN2.count(tmp)) {
 				OPER.push(gener(tmp));
 				if (!OPER.top()) {
 				throw std::logic_error("Incorrect name of the operand!");
