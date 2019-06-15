@@ -532,6 +532,12 @@ bool t_func_tree::create(std::string str) {
 			}
 			int cur = LEVEL[tmp];
 			while (!SIGN.empty() && (LEVEL[SIGN.top()] >= cur)) {
+				//Для унарных операторов и функций:
+				if (FUNC1.count(SIGN.top()) || SIGN1.count(SIGN.top())) {
+					h_item rhs = OPER.top();
+					OPER.pop();
+					OPER.push(gener(SIGN.top(), rhs));
+				}
 				//Для бинарных операторов:
 				if (SIGN2.count(SIGN.top())) {
 					h_item rhs = OPER.top();
@@ -539,12 +545,6 @@ bool t_func_tree::create(std::string str) {
 					h_item lhs = OPER.top();
 					OPER.pop();
 					OPER.push(gener(SIGN.top(), lhs, rhs));
-				}
-				//Для унарных операторов:
-				if (SIGN1.count(SIGN.top())) {
-					h_item rhs = OPER.top();
-					OPER.pop();
-					OPER.push(gener(SIGN.top(), rhs));
 				}
 				SIGN.pop();
 			}
