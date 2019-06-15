@@ -24,11 +24,19 @@
 #include "long_frac.hpp"
 
 #include <type_traits>
+#include <exception>
+#include <cassert>
 #include <ostream>
 #include <istream>
-#include <string>
 #include <memory>
+#include <regex>
+#include <cmath>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <stack>
 #include <map>
+#include <set>
 
 struct t_func_tree {
 
