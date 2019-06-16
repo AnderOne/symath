@@ -151,13 +151,9 @@ inline t_long pow(const t_long &src, unsigned n) {
 
 inline t_frac pow(const t_frac &src, long n) {
 	t_frac a = t_frac(
-		pow(src.upper(), abs(n)),
-		pow(src.lower(), abs(n))
+		pow(src.upper(), abs(n)), pow(src.lower(), abs(n))
 	);
-	if (n < 0) {
-		return 1 / a;
-	}
-	return a;
+	return (n < 0)? (t_frac(1) / a): (a);
 }
 
 inline t_long abs(const t_long &src) {
