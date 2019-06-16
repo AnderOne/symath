@@ -22,7 +22,7 @@
 
 //Методы сокращения выражений:
 
-t_func_tree::h_item t_func_tree::t_item_add::split(t_long_frac &_num) const {
+t_func_tree::h_item t_func_tree::t_item_add::split(t_frac &_num) const {
 
 	t_item_num *ptr = dynamic_cast<t_item_num *> (arg[0].get());
 	if (ptr) {
@@ -37,15 +37,15 @@ t_func_tree::h_item t_func_tree::t_item_add::split(t_long_frac &_num) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::t_item_mul::split(t_long_frac &_num) const {
+t_func_tree::h_item t_func_tree::t_item_mul::split(t_frac &_num) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::t_item_div::split(t_long_frac &_num) const {
+t_func_tree::h_item t_func_tree::t_item_div::split(t_frac &_num) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::t_item_pow::split(t_long_frac &_num) const {
+t_func_tree::h_item t_func_tree::t_item_pow::split(t_frac &_num) const {
 	return nullptr;
 }
 
@@ -72,7 +72,7 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
 	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
-	t_long_frac lv, rv;
+	t_frac lv, rv;
 	h_item l2, r2;
 	if (lb) l2 = lb->split(lv);
 	if (rb) r2 = rb->split(rv);
@@ -114,7 +114,7 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
 	t_item_bin *rb = dynamic_cast<t_item_bin *> (rhs.get());
-	t_long_frac lv, rv;
+	t_frac lv, rv;
 	h_item l2, r2;
 	if (lb) l2 = lb->split(lv);
 	if (rb) r2 = rb->split(rv);
@@ -130,7 +130,7 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	if (rn) {
 		return (lhs->mul(rn->num))->mul(num);
 	}
-	t_long_frac n =
+	t_frac n =
 	     num * lhs->num * rhs->num;
 	lhs->num = 1;
 	rhs->num = 1;
@@ -152,7 +152,7 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	}
 
 	t_item_bin *lb = dynamic_cast<t_item_bin *> (lhs.get());
-	t_long_frac lv;
+	t_frac lv;
 	h_item l2;
 	if (lb) l2 = lb->split(lv);
 	if (l2 && rn) {
@@ -162,7 +162,7 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 		return lhs->mul(num / rn->num);
 	}
 
-	t_long_frac n =
+	t_frac n =
 	     num * lhs->num / rhs->num;
 	lhs->num = 1;
 	rhs->num = 1;

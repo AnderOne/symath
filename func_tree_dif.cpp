@@ -64,7 +64,7 @@ t_func_tree::h_item t_func_tree::t_item_exp::dif(char var) const {
 }
 
 t_func_tree::h_item t_func_tree::t_item_var::dif(char var) const {
-	h_item hand = own.gener((ind == var)? num: t_long_frac(0));
+	h_item hand = own.gener((ind == var)? num: t_frac(0));
 	return hand;
 }
 

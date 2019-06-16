@@ -21,7 +21,7 @@
 #ifndef __INCLUDE_FUNC_TREE
 #define __INCLUDE_FUNC_TREE
 
-#include "long_frac.hpp"
+#include "long.hpp"
 
 #include <type_traits>
 #include <exception>
@@ -65,7 +65,7 @@ protected:
 	h_item gener(std::string str, const h_item &lhs, const h_item &rhs) const;
 	h_item gener(std::string str, const h_item &rhs) const;
 	h_item gener(std::string str) const;
-	h_item gener(t_long_frac val) const;
+	h_item gener(t_frac val) const;
 	h_item gener(long val) const;
 
 	struct h_item: public std::shared_ptr<t_item> {
@@ -77,7 +77,7 @@ protected:
 		inline h_item operator p(const h_item &rhs) const {\
 			return get()->own.gener(#p, *this, rhs);\
 		}\
-		inline h_item operator p(t_long_frac val) const {\
+		inline h_item operator p(t_frac val) const {\
 			return get()->own.gener(\
 			#p, *this, get()->own.gener(val)\
 			);\
@@ -109,7 +109,7 @@ protected:
 	#undef __DEF_ITEM_ONE
 
 	struct t_item {
-		explicit t_item(const t_func_tree &_own, t_long_frac _num = 1): own(_own), num(_num) {}
+		explicit t_item(const t_func_tree &_own, t_frac _num = 1): own(_own), num(_num) {}
 		virtual ~t_item();
 		virtual std::string str() const = 0;	//Переводит выражение в строку;
 		virtual h_item dif(char) const = 0;	//Возвращает производную;
@@ -118,16 +118,16 @@ protected:
 		virtual h_item cpy(const t_func_tree &) const = 0;
 		virtual h_item cpy() const = 0;
 		//...
-		h_item mul(t_long_frac _fac) { h_item ptr = ref(); ptr->num *= _fac; return ptr; }
+		h_item mul(t_frac _fac) { h_item ptr = ref(); ptr->num *= _fac; return ptr; }
 		h_item ref() { return own.LINK[this].lock(); }
 		//...
 		const t_func_tree &own;
-		t_long_frac num;
+		t_frac num;
 	};
 
 	struct t_item_num:
 	public t_item {
-		explicit t_item_num(const t_func_tree &_own, t_long_frac _num):
+		explicit t_item_num(const t_func_tree &_own, t_frac _num):
 		         t_item{_own, _num} {}
 		std::string str() const override;
 		h_item dif(char) const override;
@@ -154,7 +154,7 @@ protected:
 	public t_item {
 		explicit t_item_bin(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):
 		         t_item(_own),arg{_lhs, _rhs} {}
-		virtual h_item split(t_long_frac &_num) const = 0;
+		virtual h_item split(t_frac &_num) const = 0;
 		h_item arg[2];
 	};
 
@@ -163,7 +163,7 @@ protected:
 	public t_item_bin {\
 		explicit t_item_##p(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):\
 		         t_item_bin(_own, _lhs, _rhs) {}\
-		h_item split(t_long_frac &_num) const override;\
+		h_item split(t_frac &_num) const override;\
 		std::string str() const override;\
 		h_item dif(char) const override;\
 		h_item red() const override;\

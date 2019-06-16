@@ -37,7 +37,7 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &lhs, const
 
 t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const {
 
-	if (str == "sqrt") return store(new t_item_pow(*this, rhs, gener(t_long_frac(1, 2))));
+	if (str == "sqrt") return store(new t_item_pow(*this, rhs, gener(t_frac(1, 2))));
 	if (str == "exp") return store(new t_item_exp(*this, rhs));
 	if (str == "log") return store(new t_item_log(*this, rhs));
 	if (str == "cos") return store(new t_item_cos(*this, rhs));
@@ -56,14 +56,14 @@ t_func_tree::h_item t_func_tree::gener(std::string str) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::gener(t_long_frac val) const {
+t_func_tree::h_item t_func_tree::gener(t_frac val) const {
 
 	return store(new t_item_num(*this, val));
 }
 
 t_func_tree::h_item t_func_tree::gener(long val) const {
 
-	return gener(t_long_frac(val));
+	return gener(t_frac(val));
 }
 
 //...
@@ -208,7 +208,7 @@ bool t_func_tree::create(std::string str) {
 		}
 		//Числовые константы:
 		else if (res[IND_CONST].length()) {
-			t_long_frac val;
+			t_frac val;
 			std::string a = res[IND_CONST_INT].str();
 			std::string b = res[IND_CONST_MAN].str();
 			if (b.size()) {
@@ -216,10 +216,10 @@ bool t_func_tree::create(std::string str) {
 				for (int i = 0; i < b.size(); ++ i) {
 					s += "0";
 				}
-				val = t_long_frac(a + b + "/" + s);
+				val = t_frac(a + b + "/" + s);
 			}
 			else {
-				val = t_long_frac(a);
+				val = t_frac(a);
 			}
 			OPER.push(gener(val));
 			state = IS_VALUE;
