@@ -22,15 +22,15 @@
 
 //Перевод в строку:
 
-std::string t_tree::t_item_var::str() const {
+std::string t_tree::t_node_var::str() const {
 	return ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): ("")) + std::string(1, ind);
 }
 
-std::string t_tree::t_item_num::str() const {
+std::string t_tree::t_node_num::str() const {
 	return ((num < 0)? ("- "): ("")) + format(abs(num));
 }
 
-std::string t_tree::t_item_add::str() const {
+std::string t_tree::t_node_add::str() const {
 	std::string tmp;
 	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): (""));
 	tmp += "(";
@@ -44,7 +44,7 @@ std::string t_tree::t_item_add::str() const {
 }
 
 #define __DEF_ITEM_BIN_STR(ind, op) \
-std::string t_tree::t_item_##ind::str() const {\
+std::string t_tree::t_node_##ind::str() const {\
 	std::string tmp;\
 	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): (""));\
 	tmp += "((";\
@@ -60,7 +60,7 @@ __DEF_ITEM_BIN_STR(div, /)
 __DEF_ITEM_BIN_STR(pow, ^)
 
 #define __DEF_ITEM_ONE_STR(ind) \
-std::string t_tree::t_item_##ind::str() const {\
+std::string t_tree::t_node_##ind::str() const {\
 	std::string tmp;\
 	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): (""));\
 	tmp += #ind"(";\

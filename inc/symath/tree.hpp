@@ -58,31 +58,31 @@ struct t_tree {
 
 protected:
 
-	struct h_item;
-	struct t_item;
+	struct h_node;
+	struct t_node;
 
 	//Фабричные методы для создания разных типов узлов:
-	h_item gener(std::string str, const h_item &lhs, const h_item &rhs) const;
-	h_item gener(std::string str, const h_item &rhs) const;
-	h_item gener(std::string str) const;
-	h_item gener(t_frac val) const;
-	h_item gener(long val) const;
+	h_node gener(std::string str, const h_node &lhs, const h_node &rhs) const;
+	h_node gener(std::string str, const h_node &rhs) const;
+	h_node gener(std::string str) const;
+	h_node gener(t_frac val) const;
+	h_node gener(long val) const;
 
-	struct h_item: public std::shared_ptr<t_item> {
+	struct h_node: public std::shared_ptr<t_node> {
 
 		template <typename ... T>
-		h_item(T ... args): std::shared_ptr<t_item> (args ...) {}
+		h_node(T ... args): std::shared_ptr<t_node> (args ...) {}
 
 		#define __DEF_ITEM_BIN(p) \
-		inline h_item operator p(const h_item &rhs) const {\
+		inline h_node operator p(const h_node &rhs) const {\
 			return get()->own.gener(#p, *this, rhs);\
 		}\
-		inline h_item operator p(t_frac val) const {\
+		inline h_node operator p(t_frac val) const {\
 			return get()->own.gener(\
 			#p, *this, get()->own.gener(val)\
 			);\
 		}
-		inline h_item operator-() const {
+		inline h_node operator-() const {
 			return get()->own.gener("-", *this);
 		}
 
@@ -98,7 +98,7 @@ protected:
 
 	//Математические функции:
 	#define __DEF_ITEM_ONE(p) \
-	inline h_item p(const h_item &arg) const { return gener(#p, arg); }
+	inline h_node p(const h_node &arg) const { return gener(#p, arg); }
 
 	__DEF_ITEM_ONE(sqrt)
 	__DEF_ITEM_ONE(exp)
@@ -108,69 +108,69 @@ protected:
 
 	#undef __DEF_ITEM_ONE
 
-	struct t_item {
-		explicit t_item(const t_tree &_own, t_frac _num = 1): own(_own), num(_num) {}
-		virtual ~t_item();
+	struct t_node {
+		explicit t_node(const t_tree &_own, t_frac _num = 1): own(_own), num(_num) {}
+		virtual ~t_node();
 		virtual std::string str() const = 0;	//Переводит выражение в строку;
-		virtual h_item dif(char) const = 0;	//Возвращает производную;
-		virtual h_item red() const = 0;	//Сокращает выражение;
+		virtual h_node dif(char) const = 0;	//Возвращает производную;
+		virtual h_node red() const = 0;	//Сокращает выражение;
 		virtual double get() const = 0;	//Вычисляет значение;
-		virtual h_item cpy(const t_tree &) const = 0;
-		virtual h_item cpy() const = 0;
+		virtual h_node cpy(const t_tree &) const = 0;
+		virtual h_node cpy() const = 0;
 		//...
-		h_item mul(t_frac _fac) { h_item ptr = ref(); ptr->num *= _fac; return ptr; }
-		h_item ref() { return own.LINK[this].lock(); }
+		h_node mul(t_frac _fac) { h_node ptr = ref(); ptr->num *= _fac; return ptr; }
+		h_node ref() { return own.LINK[this].lock(); }
 		//...
 		const t_tree &own;
 		t_frac num;
 	};
 
-	struct t_item_num:
-	public t_item {
-		explicit t_item_num(const t_tree &_own, t_frac _num):
-		         t_item{_own, _num} {}
+	struct t_node_num:
+	public t_node {
+		explicit t_node_num(const t_tree &_own, t_frac _num):
+		         t_node{_own, _num} {}
 		std::string str() const override;
-		h_item dif(char) const override;
-		h_item red() const override;
+		h_node dif(char) const override;
+		h_node red() const override;
 		double get() const override;
-		h_item cpy(const t_tree &) const override;
-		h_item cpy() const override;
+		h_node cpy(const t_tree &) const override;
+		h_node cpy() const override;
 	};
 
-	struct t_item_var:
-	public t_item {
-		explicit t_item_var(const t_tree &_own, char _ind):
-		         t_item(_own), ind(_ind) {}
+	struct t_node_var:
+	public t_node {
+		explicit t_node_var(const t_tree &_own, char _ind):
+		         t_node(_own), ind(_ind) {}
 		std::string str() const override;
-		h_item dif(char) const override;
-		h_item red() const override;
+		h_node dif(char) const override;
+		h_node red() const override;
 		double get() const override;
-		h_item cpy(const t_tree &) const override;
-		h_item cpy() const override;
+		h_node cpy(const t_tree &) const override;
+		h_node cpy() const override;
 		const char ind;
 	};
 
-	struct t_item_bin:
-	public t_item {
-		explicit t_item_bin(const t_tree &_own, const h_item &_lhs, const h_item &_rhs):
-		         t_item(_own),arg{_lhs, _rhs} {}
-		virtual h_item split(t_frac &_num) const = 0;
-		h_item arg[2];
+	struct t_node_bin:
+	public t_node {
+		explicit t_node_bin(const t_tree &_own, const h_node &_lhs, const h_node &_rhs):
+		         t_node(_own),arg{_lhs, _rhs} {}
+		virtual h_node split(t_frac &_num) const = 0;
+		h_node arg[2];
 	};
 
 	#define __DEF_ITEM_BIN(p) \
-	struct t_item_##p:\
-	public t_item_bin {\
-		explicit t_item_##p(const t_tree &_own, const h_item &_lhs, const h_item &_rhs):\
-		         t_item_bin(_own, _lhs, _rhs) {}\
-		h_item split(t_frac &_num) const override;\
+	struct t_node_##p:\
+	public t_node_bin {\
+		explicit t_node_##p(const t_tree &_own, const h_node &_lhs, const h_node &_rhs):\
+		         t_node_bin(_own, _lhs, _rhs) {}\
+		h_node split(t_frac &_num) const override;\
 		std::string str() const override;\
-		h_item dif(char) const override;\
-		h_item red() const override;\
+		h_node dif(char) const override;\
+		h_node red() const override;\
 		double get() const override;\
-		h_item cpy(const t_tree &)\
+		h_node cpy(const t_tree &)\
 		const override;\
-		h_item cpy() const override;\
+		h_node cpy() const override;\
 	};
 
 	__DEF_ITEM_BIN(add)
@@ -180,25 +180,25 @@ protected:
 
 	#undef __DEF_ITEM_BIN
 
-	struct t_item_one:
-	public t_item {
-		explicit t_item_one(const t_tree &_own, const h_item &_arg):
-		         t_item(_own), arg{_arg} {}
-		h_item arg;
+	struct t_node_one:
+	public t_node {
+		explicit t_node_one(const t_tree &_own, const h_node &_arg):
+		         t_node(_own), arg{_arg} {}
+		h_node arg;
 	};
 
 	#define __DEF_ITEM_ONE(p) \
-	struct t_item_##p:\
-	public t_item_one {\
-		explicit t_item_##p(const t_tree &_own, const h_item &_arg):\
-		         t_item_one(_own, _arg) {}\
+	struct t_node_##p:\
+	public t_node_one {\
+		explicit t_node_##p(const t_tree &_own, const h_node &_arg):\
+		         t_node_one(_own, _arg) {}\
 		std::string str() const override;\
-		h_item dif(char) const override;\
-		h_item red() const override;\
+		h_node dif(char) const override;\
+		h_node red() const override;\
 		double get() const override;\
-		h_item cpy(const t_tree &)\
+		h_node cpy(const t_tree &)\
 		const override;\
-		h_item cpy() const override;\
+		h_node cpy() const override;\
 	};
 
 	__DEF_ITEM_ONE(exp)
@@ -208,18 +208,18 @@ protected:
 
 	#undef __DEF_ITEM_ONE
 
-	friend struct t_item;
+	friend struct t_node;
 
 private:
-	h_item store(t_item *&& _ptr) const;
+	h_node store(t_node *&& _ptr) const;
 
 	mutable std::map<
-	const t_item *,
-	std::weak_ptr<t_item> > LINK;
+	const t_node *,
+	std::weak_ptr<t_node> > LINK;
 
 	double DATA[26];
 
-	h_item root;
+	h_node root;
 };
 
 inline std::ostream &operator<<(std::ostream &out, const t_tree &tree) {

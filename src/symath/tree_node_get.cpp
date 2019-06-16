@@ -22,15 +22,15 @@
 
 //Вычисление выражения:
 
-double t_tree::t_item_var::get() const { return num * own[ind]; }
-double t_tree::t_item_num::get() const { return num; }
+double t_tree::t_node_var::get() const { return num * own[ind]; }
+double t_tree::t_node_num::get() const { return num; }
 
-double t_tree::t_item_pow::get() const {
+double t_tree::t_node_pow::get() const {
 	return num * std::pow(arg[0]->get(), arg[1]->get());
 }
 
 #define __DEF_ITEM_BIN_GET(ind, op) \
-double t_tree::t_item_##ind::get() const {\
+double t_tree::t_node_##ind::get() const {\
 	return num * (arg[0]->get() op arg[1]->get());\
 }
 
@@ -39,7 +39,7 @@ __DEF_ITEM_BIN_GET(mul, *)
 __DEF_ITEM_BIN_GET(div, /)
 
 #define __DEF_ITEM_ONE_GET(ind) \
-double t_tree::t_item_##ind::get() const {\
+double t_tree::t_node_##ind::get() const {\
 	return num * std::ind(arg->get());\
 }
 

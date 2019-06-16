@@ -22,46 +22,46 @@
 
 //Генераторы узлов:
 
-t_tree::h_item t_tree::store(t_item *&& _ptr) const { h_item hand(_ptr); LINK[_ptr] = hand; return hand; }
+t_tree::h_node t_tree::store(t_node *&& _ptr) const { h_node hand(_ptr); LINK[_ptr] = hand; return hand; }
 
-t_tree::h_item t_tree::gener(std::string str, const h_item &lhs, const h_item &rhs) const {
+t_tree::h_node t_tree::gener(std::string str, const h_node &lhs, const h_node &rhs) const {
 
-	if (str == "-") return store(new t_item_add(*this, lhs, rhs->mul(-1)));
-	if (str == "+") return store(new t_item_add(*this, lhs, rhs));
-	if (str == "*") return store(new t_item_mul(*this, lhs, rhs));
-	if (str == "/") return store(new t_item_div(*this, lhs, rhs));
-	if (str == "^") return store(new t_item_pow(*this, lhs, rhs));
+	if (str == "-") return store(new t_node_add(*this, lhs, rhs->mul(-1)));
+	if (str == "+") return store(new t_node_add(*this, lhs, rhs));
+	if (str == "*") return store(new t_node_mul(*this, lhs, rhs));
+	if (str == "/") return store(new t_node_div(*this, lhs, rhs));
+	if (str == "^") return store(new t_node_pow(*this, lhs, rhs));
 
 	return nullptr;
 }
 
-t_tree::h_item t_tree::gener(std::string str, const h_item &rhs) const {
+t_tree::h_node t_tree::gener(std::string str, const h_node &rhs) const {
 
-	if (str == "sqrt") return store(new t_item_pow(*this, rhs, gener(t_frac(1, 2))));
-	if (str == "exp") return store(new t_item_exp(*this, rhs));
-	if (str == "log") return store(new t_item_log(*this, rhs));
-	if (str == "cos") return store(new t_item_cos(*this, rhs));
-	if (str == "sin") return store(new t_item_sin(*this, rhs));
+	if (str == "sqrt") return store(new t_node_pow(*this, rhs, gener(t_frac(1, 2))));
+	if (str == "exp") return store(new t_node_exp(*this, rhs));
+	if (str == "log") return store(new t_node_log(*this, rhs));
+	if (str == "cos") return store(new t_node_cos(*this, rhs));
+	if (str == "sin") return store(new t_node_sin(*this, rhs));
 	if (str == "-u") return rhs->mul(-1);
 	if (str == "-") return rhs->mul(-1);
 
 	return nullptr;
 }
 
-t_tree::h_item t_tree::gener(std::string str) const {
+t_tree::h_node t_tree::gener(std::string str) const {
 
 	if ((str.length() == 1) && isalpha(str[0]) && islower(str[0])) {
-		return store(new t_item_var(*this, str[0]));
+		return store(new t_node_var(*this, str[0]));
 	}
 	return nullptr;
 }
 
-t_tree::h_item t_tree::gener(t_frac val) const {
+t_tree::h_node t_tree::gener(t_frac val) const {
 
-	return store(new t_item_num(*this, val));
+	return store(new t_node_num(*this, val));
 }
 
-t_tree::h_item t_tree::gener(long val) const {
+t_tree::h_node t_tree::gener(long val) const {
 
 	return gener(t_frac(val));
 }
@@ -118,7 +118,7 @@ bool t_tree::create(std::string str) {
 		start = false;
 	}
 
-	std::stack<h_item> OPER; std::stack<std::string> SIGN; std::string tmp; std::smatch res;
+	std::stack<h_node> OPER; std::stack<std::string> SIGN; std::string tmp; std::smatch res;
 	int state = IS_START;
 	root = nullptr;
 	while (true) {
@@ -141,15 +141,15 @@ bool t_tree::create(std::string str) {
 			while (!SIGN.empty() && (LEVEL[SIGN.top()] >= cur)) {
 				//Для унарных операторов и функций:
 				if (FUNC1.count(SIGN.top()) || SIGN1.count(SIGN.top())) {
-					h_item rhs = OPER.top();
+					h_node rhs = OPER.top();
 					OPER.pop();
 					OPER.push(gener(SIGN.top(), rhs));
 				}
 				//Для бинарных операторов:
 				if (SIGN2.count(SIGN.top())) {
-					h_item rhs = OPER.top();
+					h_node rhs = OPER.top();
 					OPER.pop();
-					h_item lhs = OPER.top();
+					h_node lhs = OPER.top();
 					OPER.pop();
 					OPER.push(gener(SIGN.top(), lhs, rhs));
 				}
@@ -265,7 +265,7 @@ t_tree::t_tree() {
 
 //...
 
-t_tree::t_item::~t_item() {
+t_tree::t_node::~t_node() {
 	own.LINK.erase(this);
 }
 
