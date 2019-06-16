@@ -123,6 +123,8 @@ private:
 #undef __DEF_SET_OPERATOR
 #undef __DEF_OPERATOR
 
+extern std::string format(const t_frac &val);
+
 inline std::ostream &operator << (std::ostream &out, const t_long &src) {
 	return out << src.val;
 }
