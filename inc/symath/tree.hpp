@@ -38,6 +38,8 @@
 #include <map>
 #include <set>
 
+namespace symath {
+
 struct t_tree {
 
 	inline const double &operator[] (char var) const { return DATA[(var - 'a')]; }
@@ -231,6 +233,10 @@ inline std::istream &operator>>(std::istream &inp, t_tree &tree) {
 	std::getline(inp, str);
 	tree.create(str);
 	return inp;
+}
+
+//...
+
 }
 
 #endif //__INCLUDE_TREE

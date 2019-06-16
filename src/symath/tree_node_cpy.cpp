@@ -20,6 +20,8 @@
 
 #include <symath/tree.hpp>
 
+namespace symath {
+
 //Методы клонирования узлов:
 
 t_tree::h_node t_tree::t_node_var::cpy(const t_tree &_own) const {
@@ -67,3 +69,5 @@ __DEF_ITEM_ONE_CPY(cos)
 __DEF_ITEM_ONE_CPY(sin)
 
 //...
+
+}

@@ -20,6 +20,8 @@
 
 #include <symath/long.hpp>
 
+namespace symath {
+
 std::string format(const t_frac &val, t_form frm) {
 
 	std::string str = (val < 0)? ("- "): (""); if (val.isint()) return str + std::string(abs(val));
@@ -68,4 +70,8 @@ std::string format(const t_frac &val, t_form frm) {
 	str += std::string(a) + "/" +
 	       std::string(b);
 	return str;
+}
+
+//...
+
 }

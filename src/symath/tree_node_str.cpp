@@ -20,6 +20,8 @@
 
 #include <symath/tree.hpp>
 
+namespace symath {
+
 //Перевод в строку:
 
 std::string t_tree::t_node_var::str() const {
@@ -75,3 +77,5 @@ __DEF_ITEM_ONE_STR(cos)
 __DEF_ITEM_ONE_STR(sin)
 
 //...
+
+}

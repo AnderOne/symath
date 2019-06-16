@@ -20,6 +20,8 @@
 
 #include <symath/tree.hpp>
 
+namespace symath {
+
 //Методы сокращения выражений:
 
 t_tree::h_node t_tree::t_node_add::split(t_frac &_num) const {
@@ -235,3 +237,5 @@ t_tree::h_node t_tree::t_node_sin::red() const {
 }
 
 //...
+
+}

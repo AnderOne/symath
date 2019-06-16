@@ -24,6 +24,8 @@
 #include <gmpxx.h>
 #include <string>
 
+namespace symath {
+
 #define __DEF_MATH_OPERATOR(TYPE, op) \
 TYPE operator op(const TYPE &rhs) const { return TYPE(val op rhs.val); }\
 template <typename T>\
@@ -172,5 +174,9 @@ FRM_RAT = 0, FRM_RED = 1, FRM_DOT = 2, FRM_ALL = 3
 std::string format(
 const t_frac &val, t_form frm = FRM_ALL
 );
+
+//...
+
+}
 
 #endif //__INCLUDE_LONG_H

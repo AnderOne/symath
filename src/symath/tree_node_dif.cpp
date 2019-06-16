@@ -20,6 +20,8 @@
 
 #include <symath/tree.hpp>
 
+namespace symath {
+
 //Методы дифференцирования узлов:
 
 t_tree::h_node t_tree::t_node_pow::dif(char var) const {
@@ -74,3 +76,5 @@ t_tree::h_node t_tree::t_node_num::dif(char var) const {
 }
 
 //...
+
+}

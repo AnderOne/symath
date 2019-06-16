@@ -20,6 +20,8 @@
 
 #include <symath/tree.hpp>
 
+namespace symath {
+
 //Вычисление выражения:
 
 double t_tree::t_node_var::get() const { return num * own[ind]; }
@@ -49,3 +51,5 @@ __DEF_ITEM_ONE_GET(cos)
 __DEF_ITEM_ONE_GET(sin)
 
 //...
+
+}

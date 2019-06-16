@@ -5,7 +5,7 @@
 
 int main() {
 
-	t_tree TREE;
+	symath::t_tree TREE;
 	std::string str; std::getline(std::cin, str);
 	TREE.create(str);
 	std::cout << TREE << std::endl;

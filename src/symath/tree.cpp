@@ -20,6 +20,8 @@
 
 #include <symath/tree.hpp>
 
+namespace symath {
+
 //Генераторы узлов:
 
 t_tree::h_node t_tree::store(t_node *&& _ptr) const { h_node hand(_ptr); LINK[_ptr] = hand; return hand; }
@@ -270,3 +272,5 @@ t_tree::t_node::~t_node() {
 }
 
 //...
+
+}
