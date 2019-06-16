@@ -31,7 +31,8 @@ t_tree::h_node t_tree::t_node_pow::dif(char var) const {
 }
 
 t_tree::h_node t_tree::t_node_div::dif(char var) const {
-	h_node hand = arg[0]->dif(var) / arg[1]->cpy() - arg[0]->cpy() * arg[1]->dif(var) / arg[1]->cpy();
+	h_node hand = arg[0]->dif(var) / arg[1]->cpy() -
+	              arg[0]->cpy() * (arg[1]->dif(var) / (arg[1]->cpy() ^ own.gener(2)));
 	return hand->mul(num);
 }
 
