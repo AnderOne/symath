@@ -18,57 +18,57 @@
  * if not, see <http://www.gnu.org/licenses/>
 **/
 
-#include <symath/func_tree.hpp>
+#include <symath/tree.hpp>
 
 //Методы дифференцирования узлов:
 
-t_func_tree::h_item t_func_tree::t_item_pow::dif(char var) const {
+t_tree::h_item t_tree::t_item_pow::dif(char var) const {
 	h_item hand = arg[1]->cpy() * arg[0]->dif(var) * (arg[0]->cpy() ^ (arg[1]->cpy() - own.gener(1))) +
 	              arg[1]->dif(var) * own.log(arg[0]->cpy()) * cpy();
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_div::dif(char var) const {
+t_tree::h_item t_tree::t_item_div::dif(char var) const {
 	h_item hand = arg[0]->dif(var) / arg[1]->cpy() - arg[0]->cpy() * arg[1]->dif(var) / arg[1]->cpy();
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_mul::dif(char var) const {
+t_tree::h_item t_tree::t_item_mul::dif(char var) const {
 	h_item hand = arg[0]->dif(var) * arg[1]->cpy() + arg[0]->cpy() * arg[1]->dif(var);
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_add::dif(char var) const {
+t_tree::h_item t_tree::t_item_add::dif(char var) const {
 	h_item hand = arg[0]->dif(var) + arg[1]->dif(var);
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_cos::dif(char var) const {
+t_tree::h_item t_tree::t_item_cos::dif(char var) const {
 	h_item hand = - (arg->dif(var) * own.sin(arg->cpy()));
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_sin::dif(char var) const {
+t_tree::h_item t_tree::t_item_sin::dif(char var) const {
 	h_item hand = arg->dif(var) * own.cos(arg->cpy());
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_log::dif(char var) const {
+t_tree::h_item t_tree::t_item_log::dif(char var) const {
 	h_item hand = arg->dif(var) / arg->cpy();
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_exp::dif(char var) const {
+t_tree::h_item t_tree::t_item_exp::dif(char var) const {
 	h_item hand = arg->dif(var) * cpy();
 	return hand->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_var::dif(char var) const {
+t_tree::h_item t_tree::t_item_var::dif(char var) const {
 	h_item hand = own.gener((ind == var)? num: t_frac(0));
 	return hand;
 }
 
-t_func_tree::h_item t_func_tree::t_item_num::dif(char var) const {
+t_tree::h_item t_tree::t_item_num::dif(char var) const {
 	h_item hand = own.gener(0);
 	return hand;
 }

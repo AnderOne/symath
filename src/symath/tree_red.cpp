@@ -18,11 +18,11 @@
  * if not, see <http://www.gnu.org/licenses/>
 **/
 
-#include <symath/func_tree.hpp>
+#include <symath/tree.hpp>
 
 //Методы сокращения выражений:
 
-t_func_tree::h_item t_func_tree::t_item_add::split(t_frac &_num) const {
+t_tree::h_item t_tree::t_item_add::split(t_frac &_num) const {
 
 	t_item_num *ptr = dynamic_cast<t_item_num *> (arg[0].get());
 	if (ptr) {
@@ -37,23 +37,23 @@ t_func_tree::h_item t_func_tree::t_item_add::split(t_frac &_num) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::t_item_mul::split(t_frac &_num) const {
+t_tree::h_item t_tree::t_item_mul::split(t_frac &_num) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::t_item_div::split(t_frac &_num) const {
+t_tree::h_item t_tree::t_item_div::split(t_frac &_num) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::t_item_pow::split(t_frac &_num) const {
+t_tree::h_item t_tree::t_item_pow::split(t_frac &_num) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::t_item_var::red() const { return cpy(); }
+t_tree::h_item t_tree::t_item_var::red() const { return cpy(); }
 
-t_func_tree::h_item t_func_tree::t_item_num::red() const { return cpy(); }
+t_tree::h_item t_tree::t_item_num::red() const { return cpy(); }
 
-t_func_tree::h_item t_func_tree::t_item_add::red() const {
+t_tree::h_item t_tree::t_item_add::red() const {
 
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
@@ -89,7 +89,7 @@ t_func_tree::h_item t_func_tree::t_item_add::red() const {
 	return (lhs + rhs)->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_mul::red() const {
+t_tree::h_item t_tree::t_item_mul::red() const {
 
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
@@ -137,7 +137,7 @@ t_func_tree::h_item t_func_tree::t_item_mul::red() const {
 	return (lhs * rhs)->mul(n);
 }
 
-t_func_tree::h_item t_func_tree::t_item_div::red() const {
+t_tree::h_item t_tree::t_item_div::red() const {
 
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
@@ -169,7 +169,7 @@ t_func_tree::h_item t_func_tree::t_item_div::red() const {
 	return (lhs / rhs)->mul(n);
 }
 
-t_func_tree::h_item t_func_tree::t_item_pow::red() const {
+t_tree::h_item t_tree::t_item_pow::red() const {
 
 	h_item lhs = arg[0]->red();
 	h_item rhs = arg[1]->red();
@@ -195,7 +195,7 @@ t_func_tree::h_item t_func_tree::t_item_pow::red() const {
 	return (lhs ^ rhs)->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_exp::red() const {
+t_tree::h_item t_tree::t_item_exp::red() const {
 
 	h_item lhs = arg->red();
 	if (lhs->num == 0) { return own.gener(num); }
@@ -203,7 +203,7 @@ t_func_tree::h_item t_func_tree::t_item_exp::red() const {
 	own.exp(lhs)->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_log::red() const {
+t_tree::h_item t_tree::t_item_log::red() const {
 
 	h_item lhs = arg->red();
 	if (dynamic_cast<t_item_num *> (lhs.get()) &&
@@ -214,7 +214,7 @@ t_func_tree::h_item t_func_tree::t_item_log::red() const {
 	own.log(lhs)->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_cos::red() const {
+t_tree::h_item t_tree::t_item_cos::red() const {
 
 	h_item lhs = arg->red();
 	if (lhs->num == 0) {
@@ -224,7 +224,7 @@ t_func_tree::h_item t_func_tree::t_item_cos::red() const {
 	own.cos(lhs)->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_sin::red() const {
+t_tree::h_item t_tree::t_item_sin::red() const {
 
 	h_item lhs = arg->red();
 	if (lhs->num == 0) {

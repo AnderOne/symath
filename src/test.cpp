@@ -1,11 +1,11 @@
-#include <symath/func_tree.hpp>
+#include <symath/tree.hpp>
 
 #include <iostream>
 #include <fstream>
 
 int main() {
 
-	t_func_tree TREE;
+	t_tree TREE;
 	std::string str; std::getline(std::cin, str);
 	TREE.create(str);
 	std::cout << TREE << std::endl;

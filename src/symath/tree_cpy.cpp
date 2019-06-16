@@ -18,31 +18,31 @@
  * if not, see <http://www.gnu.org/licenses/>
 **/
 
-#include <symath/func_tree.hpp>
+#include <symath/tree.hpp>
 
 //Методы клонирования узлов:
 
-t_func_tree::h_item t_func_tree::t_item_var::cpy(const t_func_tree &_own) const {
+t_tree::h_item t_tree::t_item_var::cpy(const t_tree &_own) const {
 	return _own.gener(std::string(1, ind))->mul(num);
 }
-t_func_tree::h_item t_func_tree::t_item_var::cpy() const {
+t_tree::h_item t_tree::t_item_var::cpy() const {
 	return own.gener(std::string(1, ind))->mul(num);
 }
 
-t_func_tree::h_item t_func_tree::t_item_num::cpy(const t_func_tree &_own) const {
+t_tree::h_item t_tree::t_item_num::cpy(const t_tree &_own) const {
 	return _own.gener(num);
 }
-t_func_tree::h_item t_func_tree::t_item_num::cpy() const {
+t_tree::h_item t_tree::t_item_num::cpy() const {
 	return own.gener(num);
 }
 
 #define __DEF_ITEM_BIN_CPY(ind, op) \
-t_func_tree::h_item \
-t_func_tree::t_item_##ind::cpy(const t_func_tree &_own) const {\
+t_tree::h_item \
+t_tree::t_item_##ind::cpy(const t_tree &_own) const {\
 	return _own.gener(#op, arg[0], arg[1])->mul(num);\
 }\
-t_func_tree::h_item \
-t_func_tree::t_item_##ind::cpy() const {\
+t_tree::h_item \
+t_tree::t_item_##ind::cpy() const {\
 	return own.gener(#op, arg[0], arg[1])->mul(num);\
 }
 
@@ -52,12 +52,12 @@ __DEF_ITEM_BIN_CPY(div, /)
 __DEF_ITEM_BIN_CPY(pow, ^)
 
 #define __DEF_ITEM_ONE_CPY(ind) \
-t_func_tree::h_item \
-t_func_tree::t_item_##ind::cpy(const t_func_tree &_own) const {\
+t_tree::h_item \
+t_tree::t_item_##ind::cpy(const t_tree &_own) const {\
 	return _own.gener(#ind, arg)->mul(num);\
 }\
-t_func_tree::h_item \
-t_func_tree::t_item_##ind::cpy() const {\
+t_tree::h_item \
+t_tree::t_item_##ind::cpy() const {\
 	return own.gener(#ind, arg)->mul(num);\
 }
 

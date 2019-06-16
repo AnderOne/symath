@@ -18,8 +18,8 @@
  * if not, see <http://www.gnu.org/licenses/>
 **/
 
-#ifndef __INCLUDE_FUNC_TREE
-#define __INCLUDE_FUNC_TREE
+#ifndef __INCLUDE_TREE
+#define __INCLUDE_TREE
 
 #include "long.hpp"
 
@@ -38,7 +38,7 @@
 #include <map>
 #include <set>
 
-struct t_func_tree {
+struct t_tree {
 
 	inline const double &operator[] (char var) const { return DATA[(var - 'a')]; }
 	inline double &operator[] (char var) { return DATA[(var - 'a')]; }
@@ -46,11 +46,11 @@ struct t_func_tree {
 	inline operator std::string() const { return root->str(); }
 	inline double get() const { return root->get(); }
 
-	t_func_tree &operator=(const t_func_tree &rhs);
+	t_tree &operator=(const t_tree &rhs);
 
-	t_func_tree(const t_func_tree &src);
-	t_func_tree(std::string str);
-	t_func_tree();
+	t_tree(const t_tree &src);
+	t_tree(std::string str);
+	t_tree();
 
 	bool create(std::string str);
 	void derive(char var);
@@ -109,50 +109,50 @@ protected:
 	#undef __DEF_ITEM_ONE
 
 	struct t_item {
-		explicit t_item(const t_func_tree &_own, t_frac _num = 1): own(_own), num(_num) {}
+		explicit t_item(const t_tree &_own, t_frac _num = 1): own(_own), num(_num) {}
 		virtual ~t_item();
 		virtual std::string str() const = 0;	//Переводит выражение в строку;
 		virtual h_item dif(char) const = 0;	//Возвращает производную;
 		virtual h_item red() const = 0;	//Сокращает выражение;
 		virtual double get() const = 0;	//Вычисляет значение;
-		virtual h_item cpy(const t_func_tree &) const = 0;
+		virtual h_item cpy(const t_tree &) const = 0;
 		virtual h_item cpy() const = 0;
 		//...
 		h_item mul(t_frac _fac) { h_item ptr = ref(); ptr->num *= _fac; return ptr; }
 		h_item ref() { return own.LINK[this].lock(); }
 		//...
-		const t_func_tree &own;
+		const t_tree &own;
 		t_frac num;
 	};
 
 	struct t_item_num:
 	public t_item {
-		explicit t_item_num(const t_func_tree &_own, t_frac _num):
+		explicit t_item_num(const t_tree &_own, t_frac _num):
 		         t_item{_own, _num} {}
 		std::string str() const override;
 		h_item dif(char) const override;
 		h_item red() const override;
 		double get() const override;
-		h_item cpy(const t_func_tree &) const override;
+		h_item cpy(const t_tree &) const override;
 		h_item cpy() const override;
 	};
 
 	struct t_item_var:
 	public t_item {
-		explicit t_item_var(const t_func_tree &_own, char _ind):
+		explicit t_item_var(const t_tree &_own, char _ind):
 		         t_item(_own), ind(_ind) {}
 		std::string str() const override;
 		h_item dif(char) const override;
 		h_item red() const override;
 		double get() const override;
-		h_item cpy(const t_func_tree &) const override;
+		h_item cpy(const t_tree &) const override;
 		h_item cpy() const override;
 		const char ind;
 	};
 
 	struct t_item_bin:
 	public t_item {
-		explicit t_item_bin(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):
+		explicit t_item_bin(const t_tree &_own, const h_item &_lhs, const h_item &_rhs):
 		         t_item(_own),arg{_lhs, _rhs} {}
 		virtual h_item split(t_frac &_num) const = 0;
 		h_item arg[2];
@@ -161,14 +161,14 @@ protected:
 	#define __DEF_ITEM_BIN(p) \
 	struct t_item_##p:\
 	public t_item_bin {\
-		explicit t_item_##p(const t_func_tree &_own, const h_item &_lhs, const h_item &_rhs):\
+		explicit t_item_##p(const t_tree &_own, const h_item &_lhs, const h_item &_rhs):\
 		         t_item_bin(_own, _lhs, _rhs) {}\
 		h_item split(t_frac &_num) const override;\
 		std::string str() const override;\
 		h_item dif(char) const override;\
 		h_item red() const override;\
 		double get() const override;\
-		h_item cpy(const t_func_tree &)\
+		h_item cpy(const t_tree &)\
 		const override;\
 		h_item cpy() const override;\
 	};
@@ -182,7 +182,7 @@ protected:
 
 	struct t_item_one:
 	public t_item {
-		explicit t_item_one(const t_func_tree &_own, const h_item &_arg):
+		explicit t_item_one(const t_tree &_own, const h_item &_arg):
 		         t_item(_own), arg{_arg} {}
 		h_item arg;
 	};
@@ -190,13 +190,13 @@ protected:
 	#define __DEF_ITEM_ONE(p) \
 	struct t_item_##p:\
 	public t_item_one {\
-		explicit t_item_##p(const t_func_tree &_own, const h_item &_arg):\
+		explicit t_item_##p(const t_tree &_own, const h_item &_arg):\
 		         t_item_one(_own, _arg) {}\
 		std::string str() const override;\
 		h_item dif(char) const override;\
 		h_item red() const override;\
 		double get() const override;\
-		h_item cpy(const t_func_tree &)\
+		h_item cpy(const t_tree &)\
 		const override;\
 		h_item cpy() const override;\
 	};
@@ -222,15 +222,15 @@ private:
 	h_item root;
 };
 
-inline std::ostream &operator<<(std::ostream &out, const t_func_tree &tree) {
+inline std::ostream &operator<<(std::ostream &out, const t_tree &tree) {
 	return out << (std::string) tree;
 }
 
-inline std::istream &operator>>(std::istream &inp, t_func_tree &tree) {
+inline std::istream &operator>>(std::istream &inp, t_tree &tree) {
 	std::string str;
 	std::getline(inp, str);
 	tree.create(str);
 	return inp;
 }
 
-#endif //__INCLUDE_FUNC_TREE
+#endif //__INCLUDE_TREE

@@ -18,13 +18,13 @@
  * if not, see <http://www.gnu.org/licenses/>
 **/
 
-#include <symath/func_tree.hpp>
+#include <symath/tree.hpp>
 
 //Генераторы узлов:
 
-t_func_tree::h_item t_func_tree::store(t_item *&& _ptr) const { h_item hand(_ptr); LINK[_ptr] = hand; return hand; }
+t_tree::h_item t_tree::store(t_item *&& _ptr) const { h_item hand(_ptr); LINK[_ptr] = hand; return hand; }
 
-t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &lhs, const h_item &rhs) const {
+t_tree::h_item t_tree::gener(std::string str, const h_item &lhs, const h_item &rhs) const {
 
 	if (str == "-") return store(new t_item_add(*this, lhs, rhs->mul(-1)));
 	if (str == "+") return store(new t_item_add(*this, lhs, rhs));
@@ -35,7 +35,7 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &lhs, const
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const {
+t_tree::h_item t_tree::gener(std::string str, const h_item &rhs) const {
 
 	if (str == "sqrt") return store(new t_item_pow(*this, rhs, gener(t_frac(1, 2))));
 	if (str == "exp") return store(new t_item_exp(*this, rhs));
@@ -48,7 +48,7 @@ t_func_tree::h_item t_func_tree::gener(std::string str, const h_item &rhs) const
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::gener(std::string str) const {
+t_tree::h_item t_tree::gener(std::string str) const {
 
 	if ((str.length() == 1) && isalpha(str[0]) && islower(str[0])) {
 		return store(new t_item_var(*this, str[0]));
@@ -56,19 +56,19 @@ t_func_tree::h_item t_func_tree::gener(std::string str) const {
 	return nullptr;
 }
 
-t_func_tree::h_item t_func_tree::gener(t_frac val) const {
+t_tree::h_item t_tree::gener(t_frac val) const {
 
 	return store(new t_item_num(*this, val));
 }
 
-t_func_tree::h_item t_func_tree::gener(long val) const {
+t_tree::h_item t_tree::gener(long val) const {
 
 	return gener(t_frac(val));
 }
 
 //...
 
-bool t_func_tree::create(std::string str) {
+bool t_tree::create(std::string str) {
 
 	static const std::regex expr("^\\s*(((\\d+)(\\.(\\d+))?)|([a-z]+)|(\\()|([\\+\\-\\/\\^]|\\*|\\)))\\s*");
 	//...
@@ -231,41 +231,41 @@ bool t_func_tree::create(std::string str) {
 	return true;
 }
 
-void t_func_tree::derive(char var) {
+void t_tree::derive(char var) {
 	root = root->dif(var);
 }
 
-void t_func_tree::reduce() {
+void t_tree::reduce() {
 	root = root->red();
 }
 
 //...
 
-t_func_tree &t_func_tree::operator=(const t_func_tree &rhs) {
+t_tree &t_tree::operator=(const t_tree &rhs) {
 
 	std::copy(rhs.DATA, rhs.DATA + 26, DATA);
 	root = rhs.root->cpy(*this);
 	return *this;
 }
 
-t_func_tree::t_func_tree(const t_func_tree &src) {
+t_tree::t_tree(const t_tree &src) {
 	*this = src;
 }
 
-t_func_tree::t_func_tree(std::string str) {
+t_tree::t_tree(std::string str) {
 
 	std::fill(DATA, DATA + 26, 0);
 	create(str);
 }
 
-t_func_tree::t_func_tree() {
+t_tree::t_tree() {
 
 	std::fill(DATA, DATA + 26, 0);
 }
 
 //...
 
-t_func_tree::t_item::~t_item() {
+t_tree::t_item::~t_item() {
 	own.LINK.erase(this);
 }
 
