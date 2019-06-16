@@ -28,7 +28,7 @@ symath ${SYMATH_SRC}
 )
 
 add_executable(
-demo ./src/test.cpp
+demo ./src/demo.cpp
 )
 
 target_include_directories(
