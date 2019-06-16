@@ -3,6 +3,12 @@
 !/obj
 /obj/*
 
+# CMake temporary files
+/CMakeFiles/*
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+
 # Compiled Object files
 *.obj
 *.slo
