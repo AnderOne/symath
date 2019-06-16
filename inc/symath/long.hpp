@@ -123,8 +123,6 @@ private:
 #undef __DEF_SET_OPERATOR
 #undef __DEF_OPERATOR
 
-extern std::string format(const t_frac &val);
-
 inline std::ostream &operator << (std::ostream &out, const t_long &src) {
 	return out << src.val;
 }
@@ -169,5 +167,14 @@ inline t_long abs(const t_long &src) {
 inline t_frac abs(const t_frac &src) {
 	return abs(src.val);
 }
+
+//Format of conversion to string:
+enum t_form {
+FRM_RAT = 0, FRM_RED = 1, FRM_DOT = 2, FRM_ALL = 3
+};
+
+std::string format(
+const t_frac &val, t_form frm = FRM_ALL
+);
 
 #endif //__INCLUDE_LONG_H
