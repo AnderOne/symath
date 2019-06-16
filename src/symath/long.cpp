@@ -18,7 +18,7 @@
  * if not, see <http://www.gnu.org/licenses/>
 **/
 
-#include "long.hpp"
+#include <symath/long.hpp>
 
 std::string format(const t_frac &val) {
 

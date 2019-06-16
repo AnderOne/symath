@@ -18,7 +18,7 @@
  * if not, see <http://www.gnu.org/licenses/>
 **/
 
-#include "func_tree.hpp"
+#include <symath/func_tree.hpp>
 
 //Вычисление выражения:
 

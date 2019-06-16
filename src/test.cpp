@@ -1,4 +1,4 @@
-#include "func_tree.hpp"
+#include <symath/func_tree.hpp>
 
 #include <iostream>
 #include <fstream>
