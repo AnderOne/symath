@@ -89,7 +89,7 @@ t_frac t_frac::pow(long n) const {
 	lower().pow(std::abs(n))
 	);
 	return (n < 0)?
-	t_frac(1) / a:
+	1 / a:
 	a;
 }
 

@@ -26,36 +26,56 @@
 
 namespace symath {
 
-#define __DEF_MATH_OPERATOR(TYPE, op) \
+#define __DEF_RIGHT_MATH_OPERATOR(TYPE, op) \
+template <typename L>\
+TYPE operator op(const L &lhs, const TYPE &rhs) { return TYPE(lhs) op rhs; }
+
+#define __DEF_RIGHT_CMP_OPERATOR(TYPE, op) \
+template <typename L>\
+bool operator op(const L &lhs, const TYPE &rhs) { return TYPE(lhs) op rhs; }
+
+#define __DEF_RIGHT_OPERATOR(TYPE) \
+__DEF_RIGHT_MATH_OPERATOR(TYPE, -)\
+__DEF_RIGHT_MATH_OPERATOR(TYPE, +)\
+__DEF_RIGHT_MATH_OPERATOR(TYPE, *)\
+__DEF_RIGHT_MATH_OPERATOR(TYPE, /)\
+__DEF_RIGHT_CMP_OPERATOR(TYPE, ==)\
+__DEF_RIGHT_CMP_OPERATOR(TYPE, !=)\
+__DEF_RIGHT_CMP_OPERATOR(TYPE, <=)\
+__DEF_RIGHT_CMP_OPERATOR(TYPE, >=)\
+__DEF_RIGHT_CMP_OPERATOR(TYPE, <)\
+__DEF_RIGHT_CMP_OPERATOR(TYPE, >)
+
+#define __DEF_LEFT_MATH_OPERATOR(TYPE, op) \
 TYPE operator op(const TYPE &rhs) const { return TYPE(val op rhs.val); }\
 template <typename T>\
 TYPE operator op(const T &rhs) const { return TYPE(val op rhs); }
 
-#define __DEF_SET_OPERATOR(TYPE, op) \
+#define __DEF_LEFT_SET_OPERATOR(TYPE, op) \
 template <typename T>\
 TYPE operator op##=(const T &rhs) { return *this = *this op rhs; }
 
-#define __DEF_CMP_OPERATOR(TYPE, op) \
+#define __DEF_LEFT_CMP_OPERATOR(TYPE, op) \
 bool operator op(const TYPE &rhs) const { return val op rhs.val; }\
 template <typename T>\
 bool operator op(const T &rhs) const { return val op rhs; }
 
-#define __DEF_OPERATOR(TYPE) \
+#define __DEF_LEFT_OPERATOR(TYPE) \
 TYPE operator-() const { return - val; }\
-__DEF_MATH_OPERATOR(TYPE, -)\
-__DEF_MATH_OPERATOR(TYPE, +)\
-__DEF_MATH_OPERATOR(TYPE, *)\
-__DEF_MATH_OPERATOR(TYPE, /)\
-__DEF_SET_OPERATOR(TYPE,  -)\
-__DEF_SET_OPERATOR(TYPE,  +)\
-__DEF_SET_OPERATOR(TYPE,  *)\
-__DEF_SET_OPERATOR(TYPE,  /)\
-__DEF_CMP_OPERATOR(TYPE, ==)\
-__DEF_CMP_OPERATOR(TYPE, !=)\
-__DEF_CMP_OPERATOR(TYPE, <=)\
-__DEF_CMP_OPERATOR(TYPE, >=)\
-__DEF_CMP_OPERATOR(TYPE, <)\
-__DEF_CMP_OPERATOR(TYPE, >)
+__DEF_LEFT_MATH_OPERATOR(TYPE, -)\
+__DEF_LEFT_MATH_OPERATOR(TYPE, +)\
+__DEF_LEFT_MATH_OPERATOR(TYPE, *)\
+__DEF_LEFT_MATH_OPERATOR(TYPE, /)\
+__DEF_LEFT_SET_OPERATOR(TYPE,  -)\
+__DEF_LEFT_SET_OPERATOR(TYPE,  +)\
+__DEF_LEFT_SET_OPERATOR(TYPE,  *)\
+__DEF_LEFT_SET_OPERATOR(TYPE,  /)\
+__DEF_LEFT_CMP_OPERATOR(TYPE, ==)\
+__DEF_LEFT_CMP_OPERATOR(TYPE, !=)\
+__DEF_LEFT_CMP_OPERATOR(TYPE, <=)\
+__DEF_LEFT_CMP_OPERATOR(TYPE, >=)\
+__DEF_LEFT_CMP_OPERATOR(TYPE, <)\
+__DEF_LEFT_CMP_OPERATOR(TYPE, >)
 
 struct t_long {
 
@@ -78,13 +98,16 @@ struct t_long {
 	inline t_long(mpz_class mpz): val(mpz) {}
 	inline t_long() {}
 
-	__DEF_MATH_OPERATOR(t_long, %)
-	__DEF_SET_OPERATOR(t_long, %)
-	__DEF_OPERATOR(t_long)
+	__DEF_LEFT_MATH_OPERATOR(t_long, %)
+	__DEF_LEFT_SET_OPERATOR(t_long, %)
+	__DEF_LEFT_OPERATOR(t_long)
 
 private:
 	mpz_class val;
 };
+
+__DEF_RIGHT_MATH_OPERATOR(t_long, %)
+__DEF_RIGHT_OPERATOR(t_long)
 
 struct t_frac {
 
@@ -124,16 +147,22 @@ struct t_frac {
 	}
 	inline t_frac() {}
 
-	__DEF_OPERATOR(t_frac)
+	__DEF_LEFT_OPERATOR(t_frac)
 
 private:
 	mpq_class val;
 };
 
-#undef __DEF_MATH_OPERATOR
-#undef __DEF_CMP_OPERATOR
-#undef __DEF_SET_OPERATOR
-#undef __DEF_OPERATOR
+__DEF_RIGHT_OPERATOR(t_frac)
+
+#undef __DEF_RIGHT_MATH_OPERATOR
+#undef __DEF_RIGHT_CMP_OPERATOR
+#undef __DEF_RIGHT_OPERATOR
+
+#undef __DEF_LEFT_MATH_OPERATOR
+#undef __DEF_LEFT_CMP_OPERATOR
+#undef __DEF_LEFT_SET_OPERATOR
+#undef __DEF_LEFT_OPERATOR
 
 inline std::ostream &operator << (std::ostream &out, const t_long &src) {
 	return out << src.val;

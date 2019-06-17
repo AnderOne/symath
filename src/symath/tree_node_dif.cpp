@@ -67,7 +67,7 @@ t_tree::h_node t_tree::t_node_exp::dif(char var) const {
 }
 
 t_tree::h_node t_tree::t_node_var::dif(char var) const {
-	h_node hand = own.gener((ind == var)? num: t_frac(0));
+	h_node hand = own.gener(ind == var? num: 0);
 	return hand;
 }
 
