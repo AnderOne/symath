@@ -47,7 +47,7 @@ std::string format(const t_frac &val, t_form frm) {
 				str += '0';
 			}
 			std::string tmp =
-			std::string(a * pow(t_long(c), n));
+			std::string(a * t_long(c).pow(n));
 			str += '.';
 			for (m -= tmp.size(); m; -- m) {
 			str += '0';
@@ -70,6 +70,26 @@ std::string format(const t_frac &val, t_form frm) {
 	str += std::string(a) + "/" +
 	       std::string(b);
 	return str;
+}
+
+t_long t_long::pow(unsigned n) const {
+	mpz_class b = val, a  = 1;
+	while (n) {
+		if (n & 1) a *= b;
+		b *= b;
+		n /= 2;
+	}
+	return a;
+}
+
+t_frac t_frac::pow(long n) const {
+	t_frac a = t_frac(
+	upper().pow(std::abs(n)),
+	lower().pow(std::abs(n))
+	);
+	return (n < 0)?
+	t_frac(1) / a:
+	a;
 }
 
 //...

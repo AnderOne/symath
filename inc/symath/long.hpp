@@ -68,6 +68,8 @@ struct t_long {
 	inline operator mpz_class() const { return val; }
 	inline long get() const { return val.get_si(); }
 
+	t_long pow(unsigned n) const;
+
 	inline t_long(const t_long &src): val(src.val) {}
 	template <typename ... T>
 	inline t_long(const T &... arg): val(arg ...) {}
@@ -101,6 +103,8 @@ struct t_frac {
 	inline bool isint() const {
 		return val.get_den() == 1;
 	}
+
+	t_frac pow(long n) const;
 
 	inline t_frac(const t_long &num, const t_long &den):
 	                                  val(num, den) {}
@@ -139,23 +143,6 @@ inline std::istream &operator >> (std::istream &inp, t_long &dst) {
 
 inline std::istream &operator >> (std::istream &inp, t_frac &dst) {
 	return inp >> dst.val;
-}
-
-inline t_long pow(const t_long &src, unsigned n) {
-	mpz_class b = src.val, a = 1;
-	while (n) {
-		if (n & 1) a *= b;
-		b *= b;
-		n /= 2;
-	}
-	return a;
-}
-
-inline t_frac pow(const t_frac &src, long n) {
-	t_frac a = t_frac(
-		pow(src.upper(), abs(n)), pow(src.lower(), abs(n))
-	);
-	return (n < 0)? (t_frac(1) / a): (a);
 }
 
 inline t_long abs(const t_long &src) {

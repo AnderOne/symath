@@ -182,7 +182,7 @@ t_tree::h_node t_tree::t_node_pow::red() const {
 		//NOTE: We use constraint on a maximum degree!
 		if (rn->num.isint() && (abs(rn->num) < 100)) {
 			return own.gener(
-			pow(ln->num, rn->num.upper().get())
+			ln->num.pow(rn->num.upper().get())
 			)->mul(num);
 		}
 	}
