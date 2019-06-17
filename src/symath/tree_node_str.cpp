@@ -25,16 +25,16 @@ namespace symath {
 //Перевод в строку:
 
 std::string t_tree::t_node_var::str() const {
-	return ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): ("")) + std::string(1, ind);
+	return ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (abs(num).str() + " * "): ("")) + std::string(1, ind);
 }
 
 std::string t_tree::t_node_num::str() const {
-	return ((num < 0)? ("- "): ("")) + format(abs(num));
+	return ((num < 0)? ("- "): ("")) + abs(num).str();
 }
 
 std::string t_tree::t_node_add::str() const {
 	std::string tmp;
-	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): (""));
+	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (abs(num).str() + " * "): (""));
 	tmp += "(";
 	tmp += arg[0]->str();
 	tmp += (arg[1]->num >= 0)?
@@ -48,7 +48,7 @@ std::string t_tree::t_node_add::str() const {
 #define __DEF_ITEM_BIN_STR(ind, op) \
 std::string t_tree::t_node_##ind::str() const {\
 	std::string tmp;\
-	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): (""));\
+	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (abs(num).str() + " * "): (""));\
 	tmp += "((";\
 	tmp += arg[0]->str();\
 	tmp += ") "#op" (";\
@@ -64,7 +64,7 @@ __DEF_ITEM_BIN_STR(pow, ^)
 #define __DEF_ITEM_ONE_STR(ind) \
 std::string t_tree::t_node_##ind::str() const {\
 	std::string tmp;\
-	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (format(abs(num)) + " * "): (""));\
+	tmp = ((num < 0)? ("- "): ("")) + ((abs(num) != 1)? (abs(num).str() + " * "): (""));\
 	tmp += #ind"(";\
 	tmp += arg->str();\
 	tmp += ")";\

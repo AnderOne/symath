@@ -66,6 +66,8 @@ struct t_long {
 
 	inline operator std::string() const { return val.get_str(); }
 	inline operator mpz_class() const { return val; }
+
+	inline std::string str() const { return val.get_str(); }
 	inline long get() const { return val.get_si(); }
 
 	t_long pow(unsigned n) const;
@@ -91,9 +93,13 @@ struct t_frac {
 	friend t_frac pow(const t_frac &src, long deg);
 	friend t_frac abs(const t_frac &);
 
+	//Format of conversion to string:
+	enum t_form { FRM_RAT = 0, FRM_RED = 1, FRM_DOT = 2, FRM_ALL = 3 };
+
 	inline operator std::string() const { return val.get_str(); }
 	inline operator mpq_class() const { return val; }
 	inline double get() const { return val.get_d(); }
+	std::string str(t_form frm = FRM_ALL);
 
 	inline t_long upper() const { return val.get_num(); }
 	inline t_long lower() const { return val.get_den(); }
@@ -152,15 +158,6 @@ inline t_long abs(const t_long &src) {
 inline t_frac abs(const t_frac &src) {
 	return abs(src.val);
 }
-
-//Format of conversion to string:
-enum t_form {
-FRM_RAT = 0, FRM_RED = 1, FRM_DOT = 2, FRM_ALL = 3
-};
-
-std::string format(
-const t_frac &val, t_form frm = FRM_ALL
-);
 
 //...
 
