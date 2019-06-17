@@ -65,8 +65,8 @@ struct t_long {
 	friend t_long abs(const t_long &);
 
 	inline operator std::string() const { return val.get_str(); }
-	inline operator long() const { return val.get_si(); }
-	inline mpz_class mpz() const { return val; }
+	inline operator mpz_class() const { return val; }
+	inline long get() const { return val.get_si(); }
 
 	inline t_long(const t_long &src): val(src.val) {}
 	template <typename ... T>
@@ -90,8 +90,8 @@ struct t_frac {
 	friend t_frac abs(const t_frac &);
 
 	inline operator std::string() const { return val.get_str(); }
-	inline operator double() const { return val.get_d(); }
-	inline mpq_class mpq() const { return val; }
+	inline operator mpq_class() const { return val; }
+	inline double get() const { return val.get_d(); }
 
 	inline t_long upper() const { return val.get_num(); }
 	inline t_long lower() const { return val.get_den(); }
@@ -103,7 +103,7 @@ struct t_frac {
 	}
 
 	inline t_frac(const t_long &num, const t_long &den):
-	              val(num.mpz(), den.mpz()) {}
+	                                  val(num, den) {}
 	inline t_frac(const t_frac &src): val(src.val) {}
 	template <typename ... T>
 	inline t_frac(const T &... arg): val(arg ...) {
