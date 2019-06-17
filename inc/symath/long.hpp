@@ -148,7 +148,10 @@ inline std::istream &operator >> (std::istream &inp, t_long &dst) {
 }
 
 inline std::istream &operator >> (std::istream &inp, t_frac &dst) {
-	return inp >> dst.val;
+	mpq_class val;
+	inp >> val;
+	dst = t_frac(val);
+	return inp;
 }
 
 inline t_long abs(const t_long &src) {
