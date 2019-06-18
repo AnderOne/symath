@@ -101,10 +101,10 @@ t_tree::h_node t_tree::t_node_mul::red() const {
 	if (ln && rn) {
 		return own.gener(ln->num * rn->num)->mul(num);
 	}
-	if (ln && (abs(ln->num) == 1)) {
+	if (ln && (ln->num.abs() == 1)) {
 		return rhs->mul(ln->num * num);
 	}
-	if (rn && (abs(rn->num) == 1)) {
+	if (rn && (rn->num.abs() == 1)) {
 		return lhs->mul(rn->num * num);
 	}
 	if (ln && (ln->num == 0)) {
@@ -180,7 +180,7 @@ t_tree::h_node t_tree::t_node_pow::red() const {
 	t_node_num *rn = dynamic_cast<t_node_num *> (rhs.get());
 	if (ln && rn) {
 		//NOTE: We use constraint on a maximum degree!
-		if (rn->num.isint() && (abs(rn->num) < 100)) {
+		if (rn->num.isint() && (rn->num.abs() < 100)) {
 			return own.gener(
 			ln->num.pow(rn->num.upper().get())
 			)->mul(num);
@@ -192,7 +192,7 @@ t_tree::h_node t_tree::t_node_pow::red() const {
 	if (ln && (ln->num == 1)) {
 		return own.gener(1);
 	}
-	if (rn && (rn->num == 1)) return lhs->mul(num);
+	if (rn && (rn->num == 1)) { return lhs->mul(num); }
 
 	return (lhs ^ rhs)->mul(num);
 }

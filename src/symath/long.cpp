@@ -25,9 +25,9 @@ namespace symath {
 std::string t_frac::str(t_form frm) {
 
 	const t_frac &val = *this;
-	std::string str = (val < 0)? ("- "): (""); if (val.isint()) return str + std::string(abs(val));
-	t_long a = abs(val).upper();
-	t_long b = abs(val).lower(); if (b == 0) return str + "INF";
+	std::string str = (val < 0)? ("- "): (""); if (val.isint()) return str + std::string(val.abs());
+	t_long a = val.abs().upper();
+	t_long b = val.abs().lower(); if (b == 0) return str + "INF";
 	if (frm & FRM_DOT) {
 		t_long q = b;
 		int n, m, c;

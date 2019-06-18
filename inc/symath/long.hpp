@@ -90,6 +90,7 @@ struct t_long {
 	inline std::string str() const { return val.get_str(); }
 	inline long get() const { return val.get_si(); }
 
+	t_long abs() const { return (val < 0)? (- val): (val); }
 	t_long pow(unsigned n) const;
 
 	inline t_long(const t_long &src): val(src.val) {}
@@ -133,6 +134,7 @@ struct t_frac {
 		return val.get_den() == 1;
 	}
 
+	t_frac abs() const { return (val < 0)? (- val): (val); }
 	t_frac pow(long n) const;
 
 	inline t_frac(const t_long &num, const t_long &den):
@@ -181,14 +183,6 @@ inline std::istream &operator >> (std::istream &inp, t_frac &dst) {
 	inp >> val;
 	dst = t_frac(val);
 	return inp;
-}
-
-inline t_long abs(const t_long &src) {
-	return abs(src.val);
-}
-
-inline t_frac abs(const t_frac &src) {
-	return abs(src.val);
 }
 
 //...
