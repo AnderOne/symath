@@ -81,8 +81,6 @@ struct t_long {
 
 	friend std::ostream &operator << (std::ostream &out, const t_long &src);
 	friend std::istream &operator >> (std::istream &inp, t_long &dst);
-	friend t_long pow(const t_long &src, unsigned deg);
-	friend t_long abs(const t_long &);
 
 	inline operator std::string() const { return val.get_str(); }
 	inline operator mpz_class() const { return val; }
@@ -114,8 +112,6 @@ struct t_frac {
 
 	friend std::ostream &operator << (std::ostream &out, const t_frac &src);
 	friend std::istream &operator >> (std::istream &inp, t_frac &dst);
-	friend t_frac pow(const t_frac &src, long deg);
-	friend t_frac abs(const t_frac &);
 
 	//Format of conversion to string:
 	enum t_form { FRM_RAT = 0, FRM_RED = 1, FRM_DOT = 2, FRM_ALL = 3 };
