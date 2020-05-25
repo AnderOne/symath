@@ -158,6 +158,7 @@ bool t_tree::create(std::string str) {
 				SIGN.pop();
 			}
 			if (tmp == "-" && state == IS_START) {
+				state = IS_BSIGN;
 				SIGN.push("-u");
 			}
 			else
