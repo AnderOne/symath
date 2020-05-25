@@ -137,7 +137,7 @@ bool t_tree::create(std::string str) {
 		if (res[IND_BSIGN].length() || (tmp == "")) {
 
 			if (state != IS_VALUE && (state != IS_START || tmp != "-")) {
-				throw std::logic_error("Incorrect location of the operations!");
+				throw std::logic_error("Incorrect location of operation!");
 			}
 			int cur = LEVEL[tmp];
 			while (!SIGN.empty() && (LEVEL[SIGN.top()] >= cur)) {
@@ -184,7 +184,7 @@ bool t_tree::create(std::string str) {
 		else if (res[IND_INDEX].length()) {
 
 			if (state == IS_VALUE) {
-				throw std::logic_error("Incorrect location of the operands!");
+				throw std::logic_error("Incorrect location of operand!");
 			}
 			if (!FUNC1.count(tmp) && !SIGN2.count(tmp)) {
 				OPER.push(gener(tmp));
