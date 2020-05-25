@@ -211,6 +211,9 @@ bool t_tree::create(std::string str) {
 		}
 		//Числовые константы:
 		else if (res[IND_CONST].length()) {
+			if (state == IS_VALUE) {
+				throw std::logic_error("Incorrect location of operand!");
+			}
 			t_frac val;
 			std::string a = res[IND_CONST_INT].str();
 			std::string b = res[IND_CONST_MAN].str();
