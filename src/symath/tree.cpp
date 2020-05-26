@@ -19,6 +19,12 @@
 **/
 
 #include <symath/tree.hpp>
+#include <exception>
+#include <regex>
+#include <algorithm>
+#include <stack>
+#include <map>
+#include <set>
 
 namespace symath {
 

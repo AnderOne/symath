@@ -23,20 +23,13 @@
 
 #include "long.hpp"
 
-#include <type_traits>
-#include <exception>
 #include <cassert>
 #include <ostream>
 #include <istream>
 #include <memory>
-#include <regex>
 #include <cmath>
-#include <algorithm>
-#include <vector>
 #include <string>
-#include <stack>
 #include <map>
-#include <set>
 
 namespace symath {
 
