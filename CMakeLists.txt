@@ -27,31 +27,34 @@ endif()
 
 file(GLOB SYMATH_SRC "./src/symath/*.cpp")
 
-add_library(
-symath ${SYMATH_SRC}
-)
-
-add_executable(
-demo ./src/demo.cpp
-)
-
-target_include_directories(
-symath PRIVATE
-./inc
-)
-
-target_include_directories(
-demo PRIVATE
-./inc
-)
-
+add_library(symath ${SYMATH_SRC})
+target_include_directories(symath PRIVATE ./inc)
 target_link_libraries(
-symath
-"${GMPXX_LIB}"
-"${GMP_LIB}"
+symath "${GMPXX_LIB}" "${GMP_LIB}"
 )
 
-target_link_libraries(
-demo
-symath
+add_executable(demo ./src/demo.cpp)
+target_include_directories(demo PRIVATE ./inc)
+target_link_libraries(demo symath)
+
+set(Boost_USE_STATIC_LIBS ON)
+
+find_package(
+Boost COMPONENTS unit_test_framework
 )
+
+if (Boost_FOUND)
+
+add_executable(test ./src/test.cpp)
+target_include_directories(
+test PRIVATE ./inc
+)
+target_link_libraries(
+test
+${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+)
+target_link_libraries(
+test symath
+)
+
+endif()
